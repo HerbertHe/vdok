@@ -5,25 +5,38 @@ import SideOutlineNavs from "./SideOutlineNavs"
 import VditorContainer from "./VditorContainer"
 
 import VdokConfig from "../../../vdok.config"
+import Footer from "../layouts/Footer"
+import NoContentFound from "../errors/NoContentFound"
+import Loading from "../errors/Loading"
+import GetContentError from "../errors/GetContentError"
 
 function getMarkdownContent(path: string): Promise<string> {
+    const isDev: boolean = !!VdokConfig.dev ? true : false
+
     let target: string = ""
-    const GitHubRegExp = /^http(s)?:\/\/github.com\//
-    if (GitHubRegExp.test(VdokConfig.base)) {
-        const [user, repo] = VdokConfig.base
-            .replace(GitHubRegExp, "")
-            .split("/")
-        // 获取文档路径
-        const rootRegExp = new RegExp(`http(s)?:\/\/${VdokConfig.root}`)
-        const doc = path.replace(rootRegExp, "")
-        console.log(doc)
-        target = `//cdn.jsdelivr.net/gh/${user}/${repo}@${VdokConfig.branch}${doc}.md`
+    let local: string = "/docs"
+    // 获取文档路径
+    const rootRegExp = new RegExp(`http(s)?:\/\/${VdokConfig.root}`)
+    const doc = path.replace(rootRegExp, "")
+
+    if (!isDev) {
+        const GitHubRegExp = /^http(s)?:\/\/github.com\//
+        if (GitHubRegExp.test(VdokConfig.base)) {
+            const [user, repo] = VdokConfig.base
+                .replace(GitHubRegExp, "")
+                .split("/")
+            // 更新与静态 `/docs` 下
+            target = `//cdn.jsdelivr.net/gh/${user}/${repo}@${VdokConfig.branch}/docs${doc}.md`
+        } else {
+            // TODO 不是来自于GitHub
+        }
     } else {
-        // TODO 不是来自于GitHub
+        local += `${doc}.md`
     }
 
     return new Promise((resolve, reject) => {
-        fetch(target)
+        // 处理是否是开发模式
+        fetch(isDev ? local : target)
             .then(async (res: Response) => {
                 const data = await res.text()
                 resolve(data)
@@ -38,16 +51,18 @@ const ContentViewer: FC = () => {
     })
 
     return error ? (
-        <h1>┗|｀O′|┛ 嗷~~ 加载出错了</h1>
+        <GetContentError />
     ) : loading ? (
-        <h1>加载中~</h1>
+        <Loading />
     ) : (
         <div className="w-full">
             <div className="w-260px h-screen fixed left-0 top-0 bg-white">
                 <SideOutlineNavs />
             </div>
             <div className="w-auto ml-260px px-45px">
-                <VditorContainer markdown={data} />
+                {!!data && <VditorContainer markdown={data} />}
+                {!data && <NoContentFound />}
+                <Footer />
             </div>
         </div>
     )

@@ -1,6 +1,6 @@
 import React, { FC } from "react"
-import Footer from "./Footer"
-import Header from "./Header"
+import Footer from "./layouts/Footer"
+import Header from "./layouts/Header"
 
 const Home: FC = () => {
     return (
