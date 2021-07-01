@@ -1,4 +1,4 @@
-import React, { FC } from "react"
+import React, { FC, useState } from "react"
 import { useRequest } from "ahooks"
 
 import SideOutlineNavs from "./SideOutlineNavs"
@@ -9,6 +9,8 @@ import Footer from "../layouts/Footer"
 import NoContentFound from "../errors/NoContentFound"
 import Loading from "../errors/Loading"
 import GetContentError from "../errors/GetContentError"
+import ContentOutline from "./ContentOutline"
+import { GenerateContentOutline } from "../../utils/outline"
 
 function getMarkdownContent(path: string): Promise<string> {
     const isDev: boolean = !!VdokConfig.dev ? true : false
@@ -59,10 +61,18 @@ const ContentViewer: FC = () => {
             <div className="w-260px h-screen fixed left-0 top-0 bg-white">
                 <SideOutlineNavs />
             </div>
-            <div className="w-auto ml-260px px-45px">
+            <div className="w-auto ml-260px mr-150px px-45px">
                 {!!data && <VditorContainer markdown={data} />}
                 {!data && <NoContentFound />}
                 <Footer />
+            </div>
+            <div className="w-150px h-screen fixed right-0 top-0 p-3 shadow">
+                <div className="text-gray-400 font-bold mb-3">Outline</div>
+                <ContentOutline
+                    outlines={
+                        !!data ? GenerateContentOutline(data as string) : []
+                    }
+                />
             </div>
         </div>
     )

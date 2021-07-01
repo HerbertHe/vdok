@@ -10,8 +10,8 @@ export default defineConfig({
             resolve(process.cwd(), "dist"),
             // 排除node_modules影响
             resolve(__dirname, "node_modules"),
-            resolve(__dirname, "windi.config.ts")
-        ]
+            resolve(__dirname, "windi.config.ts"),
+        ],
     },
-    darkMode: "class"
+    darkMode: "class",
 })

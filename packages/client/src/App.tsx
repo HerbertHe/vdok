@@ -5,7 +5,7 @@ import ContentViewer from "./components/content/ContentViewer"
 import Home from "./components/Home"
 
 const App: FC = () => (
-    <div className="w-full">
+    <div className="w-full font-serif">
         <Router>
             <Switch>
                 <Route path="/" exact component={Home} />
