@@ -12,6 +12,7 @@ import GetContentError from "../errors/GetContentError"
 import ContentOutline from "./ContentOutline"
 import { GenerateContentOutline } from "../../utils/outline"
 import ContentHeader from "./ContentHeader"
+import { DivideFeatures } from "../../utils/preprocessor"
 
 function getMarkdownContent(path: string): Promise<string> {
     const isDev: boolean = !!VdokConfig.dev ? true : false
@@ -65,8 +66,10 @@ const ContentViewer: FC = () => {
             <div className="w-full ml-260px h-60px fixed top-0 bg-white z-99 shadow dark:(bg-dark-700 text-white)">
                 <ContentHeader />
             </div>
-            <div className="w-auto ml-260px mr-150px px-45px mt-60px">
-                {!!data && <VditorContainer markdown={data} />}
+            <div className="w-auto ml-260px mr-150px px-45px mt-70px">
+                {!!data && (
+                    <VditorContainer markdown={DivideFeatures(data)[1]} />
+                )}
                 {!data && <NoContentFound />}
                 <Footer />
             </div>

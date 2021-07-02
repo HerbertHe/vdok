@@ -26,12 +26,16 @@ const VditorContainer: FC<IVditorContainerProps> = ({ markdown }) => {
 
             // 锚点定位
             const hash = location.hash
-            const target = document.querySelector(hash) as HTMLHeadingElement
 
-            if (!!hash && !!target) {
-                scrollTo({
-                    top: target.offsetTop - 80,
-                })
+            if (!!hash) {
+                const target = document.querySelector(
+                    hash
+                ) as HTMLHeadingElement
+                if (!!target) {
+                    scrollTo({
+                        top: target.offsetTop - 80,
+                    })
+                }
             }
         })
     }, [])
