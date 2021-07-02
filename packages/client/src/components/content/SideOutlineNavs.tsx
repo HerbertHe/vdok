@@ -20,7 +20,7 @@ const routes: Array<INavItemsWithSection> = [
 ]
 
 const SideOutlineNavs = () => (
-    <div className="w-full flex flex-col h-full shadow py-20px">
+    <div className="w-full flex flex-col h-full shadow py-20px dark:(bg-dark-800 text-white)">
         {/* 展示logo */}
         <h1 className="w-full text-center text-bold text-red-500">Vdok</h1>
         {/* 展示文档名 */}

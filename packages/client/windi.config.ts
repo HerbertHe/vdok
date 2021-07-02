@@ -1,6 +1,8 @@
 import { defineConfig } from "vite-plugin-windicss"
 import { resolve } from "path"
 
+import PluginScrollBar from "@windicss/plugin-scrollbar"
+
 export default defineConfig({
     extract: {
         exclude: [
@@ -14,4 +16,5 @@ export default defineConfig({
         ],
     },
     darkMode: "class",
+    plugins: [PluginScrollBar],
 })

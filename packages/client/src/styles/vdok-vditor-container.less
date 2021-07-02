@@ -1,0 +1,84 @@
+// 日间模式样式覆盖
+.vdok-vditor-container {
+    // 主题样式
+    --theme-color: #d43e2a;
+    strong {
+        color: var(--theme-color);
+        margin: 0 2px;
+    }
+
+    a {
+        color: var(--theme-color);
+        margin: 0 2px;
+        @apply underline underline-dashed;
+    }
+
+    em {
+        @apply text-shadow-md;
+        color: var(--theme-color);
+        margin: 0 5px;
+    }
+
+    p li {
+        & > code {
+            @apply !bg-red-50;
+            color: var(--theme-color);
+        }
+    }
+
+    kbd {
+        @apply !bg-red-50;
+        color: var(--theme-color);
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply hover:(underline underline-red-500) cursor-pointer;
+    }
+
+    table {
+        border-radius: 5px;
+        overflow: hidden;
+    }
+}
+
+// 夜间模式样式覆盖
+html[class="dark"] .vdok-vditor-container {
+    @apply text-light-900;
+
+    p,
+    li {
+        & > code {
+            @apply !bg-dark-400;
+            color: var(--theme-color);
+        }
+    }
+
+    kbd {
+        @apply !bg-dark-400 border border-dark-200;
+        color: var(--theme-color);
+    }
+
+    table {
+        tr {
+            @apply bg-dark-800;
+            td {
+                @apply bg-dark-500;
+            }
+        }
+
+        td,
+        th {
+            @apply border border-dark-100;
+        }
+    }
+
+    // TODO 修复夜间模式问题
+    code[class*="hljs"] {
+        @apply bg-dark-500 text-light-900;
+    }
+}

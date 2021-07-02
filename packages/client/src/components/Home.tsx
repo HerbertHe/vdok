@@ -9,7 +9,7 @@ const Home: FC = () => {
                 <Header />
             </header>
             <main className="w-full">
-                <div className="bg-gray-100 h-300px flex flex-col justify-center items-center">
+                <div className="bg-gray-100 h-300px flex flex-col justify-center items-center dark:(bg-dark-500 text-light-900)">
                     Hero
                 </div>
             </main>
