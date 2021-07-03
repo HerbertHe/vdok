@@ -15,33 +15,30 @@ export interface IContentOutlineProps {
 
 const ContentOutline: FC<IContentOutlineProps> = ({ outlines }) => {
     useEffect(() => {
-        // 监听hash改变, 更新样式
-        // window.addEventListener(
-        //     "scroll",
-        //     _.debounce(() => {
-        //         // 滚动更新 hash
-        //     }, 500)
-        // )
-        // return () => {
-        //     window.removeEventListener("scroll", () => {})
-        // }
+        // TODO 滚动更新hash
+        updateAnchorTheme()
         window.addEventListener("hashchange", () => {
-            const doms = document.getElementsByClassName(
-                "vdok-content-outline"
-            ) as HTMLCollectionOf<HTMLLinkElement>
-            for (let item of doms) {
-                if (
-                    `#${encodeURIComponent(
-                        item.href.substring(1, item.href.length)
-                    )}` === location.hash
-                ) {
-                    item.classList.add("text-red")
-                } else {
-                    item.classList.remove("text-red")
-                }
-            }
+            updateAnchorTheme()
         })
     }, [])
+
+    const updateAnchorTheme = () => {
+        const doms = document.getElementsByClassName(
+            "vdok-content-outline"
+        ) as HTMLCollectionOf<HTMLLinkElement>
+        for (let item of doms) {
+            if (
+                item.getAttribute("data-anchor") ===
+                `#${decodeURIComponent(
+                    location.hash.substring(1, location.hash.length)
+                )}`
+            ) {
+                item.classList.add("text-color-[#d43e2a]")
+            } else {
+                item.classList.remove("text-color-[#d43e2a]")
+            }
+        }
+    }
 
     const scrollAnchor = (
         e: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
@@ -57,6 +54,7 @@ const ContentOutline: FC<IContentOutlineProps> = ({ outlines }) => {
                 <li key={item.heading} className="my-1">
                     <a
                         href={`#${item.anchor}`}
+                        data-anchor={`#${item.anchor}`}
                         title={item.heading}
                         className="vdok-content-outline"
                         onClick={(e) => scrollAnchor(e, `#${item.anchor}`)}

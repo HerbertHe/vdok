@@ -7,7 +7,9 @@ export function DivideFeatures(markdown: string): Array<string> {
     const reg = yamlRegExp.exec(markdown) as RegExpExecArray
 
     if (!!reg) {
-        return [reg[1].trim(), markdown.replace(yamlRegExp, "").trim()]
+        const yamlContent = reg[1].trim()
+        const markdownContent = markdown.replace(yamlRegExp, "").trim()
+        return [yamlContent, markdownContent]
     }
-    return ["", markdown]
+    return ["", markdown.trim()]
 }

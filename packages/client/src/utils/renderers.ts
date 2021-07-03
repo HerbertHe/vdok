@@ -12,7 +12,7 @@ declare let Lute: any
 function renderHeading(node: any, entering: boolean) {
     // TODO 插入锚点, 拿不到自定义锚点的问题
     if (entering) {
-        console.log(node.__internal_object__)
+        // console.log(node.__internal_object__)
         return [
             `<h${node.__internal_object__.HeadingLevel} id=${ConvertAnchor(
                 node.Text()
