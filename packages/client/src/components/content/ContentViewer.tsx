@@ -82,7 +82,11 @@ const ContentViewer: FC = () => {
                 <div className="text-gray-400 font-bold mb-3">Outline</div>
                 <ContentOutline
                     outlines={
-                        !!data ? GenerateContentOutline(data as string) : []
+                        !!data
+                            ? GenerateContentOutline(
+                                  DivideFeatures(data)[1] as string
+                              )
+                            : []
                     }
                 />
             </div>

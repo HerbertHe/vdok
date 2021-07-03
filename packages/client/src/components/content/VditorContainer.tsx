@@ -2,6 +2,7 @@ import React, { createRef, FC, useEffect } from "react"
 import Vditor from "vditor"
 
 import "../../styles/vdok-vditor-container.less"
+import { renderers } from "../../utils/renderers"
 
 import NoContentFound from "../errors/NoContentFound"
 
@@ -19,13 +20,18 @@ const VditorContainer: FC<IVditorContainerProps> = ({ markdown }) => {
         // TODO 处理Vditor奇异锚点渲染的问题
         Vditor.preview(
             vditorContainerRef.current as HTMLDivElement,
-            !!markdown ? markdown : ""
+            !!markdown ? markdown : "",
+            {
+                renderers,
+            }
         ).then(() => {
             // 样式注入
             vditorContainerRef.current?.classList.add("vdok-vditor-container")
 
             // 锚点定位
-            const hash = location.hash
+            const hash = `#${decodeURIComponent(
+                location.hash.substring(1, location.hash.length)
+            )}`
 
             if (!!hash) {
                 const target = document.querySelector(
