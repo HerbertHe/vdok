@@ -4,6 +4,11 @@ html {
 
 html[class="dark"] {
     @apply bg-dark-900;
+
+    // 夜间模式降低全局图片亮度
+    img {
+        @apply filter brightness-50;
+    }
 }
 
 .vdok-special-a {

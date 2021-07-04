@@ -1,7 +1,6 @@
 import React, { FC, useEffect } from "react"
 import _ from "lodash"
 import { ToAnchor } from "../../utils/actions"
-import { ConvertAnchor } from "../../utils/converters"
 
 export interface IContentOutlineItem {
     heading: string
@@ -15,11 +14,27 @@ export interface IContentOutlineProps {
 
 const ContentOutline: FC<IContentOutlineProps> = ({ outlines }) => {
     useEffect(() => {
-        // TODO 滚动更新hash
         updateAnchorTheme()
         window.addEventListener("hashchange", () => {
             updateAnchorTheme()
         })
+        window.addEventListener(
+            "scroll",
+            _.throttle(() => {
+                for (let item of outlines) {
+                    const top = document
+                        .getElementById(item.anchor as string)
+                        ?.getBoundingClientRect().top as number
+                    if (top > 0 && top < 80) {
+                        location.hash = item.anchor as string
+                    }
+                }
+            }, 100)
+        )
+        return () => {
+            window.removeEventListener("hashchange", () => {})
+            window.removeEventListener("scroll", () => {})
+        }
     }, [])
 
     const updateAnchorTheme = () => {

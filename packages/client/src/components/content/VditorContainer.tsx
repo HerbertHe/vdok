@@ -23,6 +23,7 @@ const VditorContainer: FC<IVditorContainerProps> = ({ markdown }) => {
             !!markdown ? markdown : "",
             {
                 renderers,
+                anchor: 1,
             }
         ).then(() => {
             // 样式注入
@@ -45,6 +46,7 @@ const VditorContainer: FC<IVditorContainerProps> = ({ markdown }) => {
             }
         })
     }, [])
+
     return !!markdown ? (
         <div ref={vditorContainerRef} className="w-full"></div>
     ) : (

@@ -10,9 +10,9 @@ declare let Lute: any
  * @param entering 进入渲染状态
  */
 function renderHeading(node: any, entering: boolean) {
-    // TODO 插入锚点, 拿不到自定义锚点的问题
+    // BUG 插入锚点, 拿不到自定义锚点的问题
     if (entering) {
-        // console.log(node.__internal_object__)
+        console.log(node.IALAttr())
         return [
             `<h${node.__internal_object__.HeadingLevel} id=${ConvertAnchor(
                 node.Text()
