@@ -19,6 +19,11 @@
     "url": "https://github.com/HerbertHe/vdok/issues"
   },
   "devDependencies": {
+    "@rollup/plugin-babel": "^5.3.0",
+    "@rollup/plugin-commonjs": "^19.0.0",
+    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-node-resolve": "^13.0.0",
+    "@types/jest": "^26.0.23",
     "@types/lodash": "^4.14.170",
     "@types/marked": "^2.0.3",
     "@types/node": "^15.12.5",
@@ -27,7 +32,9 @@
     "@types/react-router-dom": "^5.1.7",
     "@vitejs/plugin-react-refresh": "^1.3.4",
     "@windicss/plugin-scrollbar": "^1.2.3",
+    "jest": "^27.0.6",
     "less": "^4.1.1",
+    "rollup": "^2.52.7",
     "typescript": "^4.3.4",
     "vite": "^2.3.8",
     "vite-plugin-windicss": "^1.1.1",

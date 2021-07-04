@@ -15,7 +15,7 @@ export interface IContentOutlineProps {
 const ContentOutline: FC<IContentOutlineProps> = ({ outlines }) => {
     useEffect(() => {
         updateAnchorTheme()
-        window.addEventListener("hashchange", () => {
+        window.addEventListener("hashchange", (e) => {
             updateAnchorTheme()
         })
         window.addEventListener(
@@ -25,11 +25,12 @@ const ContentOutline: FC<IContentOutlineProps> = ({ outlines }) => {
                     const top = document
                         .getElementById(item.anchor as string)
                         ?.getBoundingClientRect().top as number
+                    // BUG 锚点太近的页面抖动问题
                     if (top > 0 && top < 80) {
                         location.hash = item.anchor as string
                     }
                 }
-            }, 100)
+            }, 200)
         )
         return () => {
             window.removeEventListener("hashchange", () => {})

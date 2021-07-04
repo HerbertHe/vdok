@@ -19,7 +19,6 @@ export function ToAnchor(anchor: string) {
     if (!to) {
         return
     }
-    // TODO 添加滚动事件监听, 动态更新对应锚点的颜色
     location.hash = anchor
     scrollTo({
         top: to.offsetTop - 80,
