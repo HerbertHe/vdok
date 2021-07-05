@@ -7,6 +7,16 @@ import { isI18nMode, isIncludedInBCP47 } from "./is"
  */
 const cwd = process.cwd()
 
+interface IDetectEffectiveSection {
+    section: string
+    files: Array<string>
+}
+
+export interface IDetectEffectiveFiles {
+    lang: string
+    sections: Array<IDetectEffectiveSection>
+}
+
 /**
  * 在i18n模式下侦测
  */
@@ -66,7 +76,7 @@ function detectNotInI18nMode(): [Array<string>, Array<string>] {
  * 递归获取所有 markdown 的文件
  * @param dirp 文件夹完整路径
  */
-function detectAllFiles(dirp: string) {
+function detectAllFiles(dirp: string): Array<string> {
     let _files: Array<string> = []
     const mdRegExp = /.md$/
     const fd = fs.readdirSync(dirp)
@@ -85,17 +95,91 @@ function detectAllFiles(dirp: string) {
     return _files
 }
 
-export function detectEffectiveFiles() {
+export function detectEffectiveFiles(): Array<IDetectEffectiveFiles> {
     const p = path.join(cwd, "docs")
     if (!fs.existsSync(p)) {
         // TODO 扔出错误
         throw new Error("No /docs dir Found!")
     }
 
-    // 判断是否处于i18n模式
+    // 判断是否处于i18n模式, 返回数据结构不同
     if (isI18nMode(cwd)) {
-        detectInI18nMode()
+        const [_files, _dirs] = detectInI18nMode()
+        let _back: Array<IDetectEffectiveFiles> = []
+        let rootFiles: IDetectEffectiveFiles = {
+            lang: "",
+            sections: [
+                {
+                    section: "",
+                    files: _files,
+                },
+            ],
+        }
+
+        _back.push(rootFiles)
+
+        for (let _dir of _dirs) {
+            // 这里的 _dir 是完整路径
+            let _fTmp: IDetectEffectiveFiles = {
+                lang: _dir.replace(cwd, ""),
+                sections: [],
+            }
+
+            const children = fs.readdirSync(_dir)
+            // 空文件夹
+            if (children.length === 0) continue
+
+            let _nonSectionFile: IDetectEffectiveSection = {
+                section: "",
+                files: [],
+            }
+
+            // 处理章节和文件问题
+            for (let child of children) {
+                const p = path.join(_dir, child)
+                const isDir = fs.lstatSync(p).isDirectory()
+
+                if (!isDir) {
+                    // 文件的情况
+                    _nonSectionFile.files.push(p)
+                } else {
+                    let _tmpSection: IDetectEffectiveSection = {
+                        section: child,
+                        files: detectAllFiles(p),
+                    }
+                    _fTmp.sections.push(_tmpSection)
+                }
+            }
+
+            _fTmp.sections.push(_nonSectionFile)
+            _back.push(_fTmp)
+        }
+
+        return _back
     } else {
-        detectNotInI18nMode()
+        const [_files, _dirs] = detectNotInI18nMode()
+        let _back: Array<IDetectEffectiveFiles> = []
+        let _f: IDetectEffectiveFiles = {
+            lang: "",
+            sections: [
+                {
+                    section: "",
+                    files: _files,
+                },
+            ],
+        }
+
+        for (let _dir of _dirs) {
+            let _tmp: IDetectEffectiveSection = {
+                section: _dir.replace(cwd, ""),
+                files: detectAllFiles(_dir),
+            }
+
+            _f.sections.push(_tmp)
+        }
+
+        _back.push(_f)
+
+        return _back
     }
 }

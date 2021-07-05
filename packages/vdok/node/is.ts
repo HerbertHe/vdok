@@ -1,15 +1,13 @@
 import fs from "fs"
 import path from "path"
 
-import { parse } from "bcp-47"
+import tags from "language-tags"
 
 /**
  * 符合BCP47规范
  */
 export function isIncludedInBCP47(tag: string): boolean {
-    const info = parse(tag)
-    console.log(info)
-    return false
+    return tags(tag).valid()
 }
 
 /**
