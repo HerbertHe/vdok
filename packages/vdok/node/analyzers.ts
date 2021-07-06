@@ -44,6 +44,6 @@ export function analyzeArticleFeatures(yml: string): IArticleFeatures {
  */
 export function analyzerArticle(content: string): [IArticleFeatures, string] {
     const [features, markdown] = DivideFeatures(content)
-    const feat = analyzeArticleFeatures(features)
-    return [feat, markdown]
+    const feats = analyzeArticleFeatures(features)
+    return [feats, markdown]
 }
