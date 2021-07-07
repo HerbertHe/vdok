@@ -3,6 +3,10 @@ import path from "path"
 import { isI18nMode, isIncludedInBCP47 } from "./is"
 
 /**
+ * TODO: 考虑将根目录的section改为 _root?
+ */
+
+/**
  * 命令行执行路径
  */
 const cwd = process.cwd()
