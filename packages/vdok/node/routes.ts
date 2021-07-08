@@ -1,5 +1,5 @@
 import { ISideNavSection } from "@herberthe/vdok-types"
-import { detectEffectiveFiles } from "./detect"
+import { handleEffectiveFiles } from "./handle"
 
 // const _SpecialFileNames: Set<string> = new Set(["_index.md", "_index.zh-CN.md"])
 

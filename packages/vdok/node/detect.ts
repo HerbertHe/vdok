@@ -4,6 +4,10 @@ import { bgBlueBright, green } from "chalk"
 import { isI18nMode, isIncludedInBCP47 } from "./is"
 
 /**
+ * TODO: i18n需要修改侦测逻辑, 需要屏蔽根目录文件, 并且所有的语言下的 _index.md 都视为 i18n 默认做兜底设计
+ */
+
+/**
  * 命令行执行路径
  */
 const cwd = process.cwd()
@@ -35,7 +39,7 @@ function removePrefix(t: string, i18n: string): string {
 /**
  * 在i18n模式下侦测
  */
-function detectInI18nMode(): [Array<string>, Array<string>] {
+function detectInI18nMode(): Array<string> {
     const p = path.join(cwd, "docs")
     let _dirs: Array<string> = []
     let _files: Array<string> = []
@@ -52,15 +56,12 @@ function detectInI18nMode(): [Array<string>, Array<string>] {
             _dirs.push(tmp)
         }
 
-        // 文件
-        if (!isDir) {
-            _files.push(tmp)
-        }
+        // 忽略掉所有根目录文件
 
         // 不是i18n文件夹忽略掉
     })
 
-    return [_files, _dirs]
+    return _dirs
 }
 
 /**
@@ -122,21 +123,7 @@ export function detectEffectiveFiles(): Array<IDetectEffectiveFiles> {
 
     // 判断是否处于i18n模式, 返回数据结构不同
     if (isI18nMode(cwd)) {
-        const [_files, _dirs] = detectInI18nMode()
-
-        if (_files.length !== 0) {
-            let rootFiles: IDetectEffectiveFiles = {
-                lang: "",
-                sections: [
-                    {
-                        section: "_root",
-                        files: _files,
-                    },
-                ],
-            }
-
-            _back.push(rootFiles)
-        }
+        const _dirs = detectInI18nMode()
 
         for (let _dir of _dirs) {
             // 这里的 _dir 是完整路径
@@ -150,7 +137,7 @@ export function detectEffectiveFiles(): Array<IDetectEffectiveFiles> {
             if (children.length === 0) continue
 
             let _nonSectionFile: IDetectEffectiveSection = {
-                section: "_nonSection",
+                section: "_root",
                 files: [],
             }
 

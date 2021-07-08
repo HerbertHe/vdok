@@ -31,11 +31,17 @@ export interface IArticleFeatures {
  * @param yml yaml features
  */
 export function analyzeArticleFeatures(yml: string): IArticleFeatures {
-    const ans = YAML.parse(yml) as IArticleFeatures
-    let _re: IArticleFeatures = {}
-    _re.title = !!ans.title ? ans.title : ""
-    _re.order = !!ans.order ? ans.order : 0
-    return _re
+    if (!!yml) {
+        const ans = YAML.parse(yml) as IArticleFeatures
+        let _re: IArticleFeatures = {}
+        _re.title = !!ans.title ? ans.title : ""
+        _re.order = !!ans.order ? ans.order : 0
+        return _re
+    }
+    return {
+        title: "",
+        order: 0,
+    } as IArticleFeatures
 }
 
 /**

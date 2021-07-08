@@ -11,6 +11,7 @@ export interface IEffectiveFilesSectionIndex {
 
 export interface IEffectiveFilesSection {
     title: string
+    name: string
     index: IEffectiveFilesSectionIndex
     files: Array<[IArticleFeatures, string]>
 }
@@ -60,14 +61,13 @@ export function handleFiles(
  * 章节排序
  * @param sections
  */
-export function sortSections(
+function sortSections(
     sections: Array<IEffectiveFilesSection>
 ): Array<IEffectiveFilesSection> {
     let _nonSection: IEffectiveFilesSection = sections[0]
     let _ordered: Array<IEffectiveFilesSection> = []
     let _noOrdered: Array<IEffectiveFilesSection> = []
 
-    // TODO 支持根目录 i18n 这里需要修改
     sections.slice(1, sections.length - 1).forEach((_section) => {
         if (
             !_section.index.exist ||
@@ -99,8 +99,7 @@ export function handleEffectiveFiles(): Array<IEffectiveFilesSectionWithLang> {
     const _fs: Array<IDetectEffectiveFiles> = detectEffectiveFiles()
 
     if (_fs.length === 0) {
-        // TODO 没有文件扔出错误
-        throw new Error("No Content")
+        throw new Error("No files in the /docs folder")
     }
 
     // 处理非 i18n 的情况
@@ -112,9 +111,10 @@ export function handleEffectiveFiles(): Array<IEffectiveFilesSectionWithLang> {
 
         for (let _section of _fs[0].sections) {
             // 单文件默认扔到最前面, 要排除 _index.md 文件
-            if (!_section.section) {
+            if (_section.section === "_root") {
                 let _tS: IEffectiveFilesSection = {
                     title: "",
+                    name: "",
                     index: {
                         exist: false,
                         feats: {
@@ -129,7 +129,7 @@ export function handleEffectiveFiles(): Array<IEffectiveFilesSectionWithLang> {
                 let _isIndex: string = ""
 
                 _section.files.forEach((f) => {
-                    const _fnameArray = f.split(/(\\\\|\/)/)
+                    const _fnameArray = f.split(/(\\|\/)/)
 
                     // 处理非 _index.md 文件
                     if (_fnameArray[_fnameArray.length] !== "_index.md") {
@@ -153,6 +153,7 @@ export function handleEffectiveFiles(): Array<IEffectiveFilesSectionWithLang> {
                 // section 的处理
                 let _tS: IEffectiveFilesSection = {
                     title: "",
+                    name: _section.section,
                     index: {
                         exist: false,
                         feats: {
@@ -168,7 +169,7 @@ export function handleEffectiveFiles(): Array<IEffectiveFilesSectionWithLang> {
                 let _isIndex: string = ""
 
                 _section.files.forEach((f) => {
-                    const _fnameArray = f.split(/(\\\\|\/)/)
+                    const _fnameArray = f.split(/(\\|\/)/)
 
                     // 处理非 _index.md 文件
                     if (_fnameArray[_fnameArray.length] !== "_index.md") {
@@ -210,13 +211,13 @@ export function handleEffectiveFiles(): Array<IEffectiveFilesSectionWithLang> {
                 sections: [],
             }
 
-            // 处理根目录文件, 已经过滤了非i18n文件夹, 不能以 _f.lang 判断根目录文件夹
-            // 后期支持根目录 i18n 需要修改判断条件
-            if (!_f.sections[0].section) {
-                // TODO 对于根目录考虑支持i18n, eg. _index.zh_CN.md  要替换为 -
-                _tmp.lang = _f.lang
+            // TODO 根目录配置已经不再支持, 改为 zh-CN/_index.md 侦测
+            _tmp.lang = _f.lang
+            // 遍历处理子 sections
+            for (let _section of _f.sections) {
                 let _tS: IEffectiveFilesSection = {
                     title: "",
+                    name: _section.section,
                     index: {
                         exist: false,
                         feats: {
@@ -227,63 +228,16 @@ export function handleEffectiveFiles(): Array<IEffectiveFilesSectionWithLang> {
                     },
                     files: [],
                 }
-                let _notRootIndex: Array<string> = []
-                // TODO 支持根目录 i18n 之后这里需要修改
-                let _isRootIndex: string = ""
 
-                // 目前没有支持根目录的 i18n, 只有一个section
-                _f.sections[0].files.forEach((f) => {
-                    const _fnameArray = f.split(/(\\\\|\/)/)
-
-                    // 处理非 _index.md 文件
-                    if (_fnameArray[_fnameArray.length] !== "_index.md") {
-                        _notRootIndex.push(f)
-                    } else {
-                        _isRootIndex === f
-                    }
-                })
-
-                // section 存在 _index.md 文件
-                if (_notRootIndex.length !== _f.sections[0].files.length) {
-                    // 处理 section 的 _index.md 文件
-                    const [feats, markdown] = analyzerArticle(_isRootIndex)
-                    _tS.title = !!feats.title
-                        ? feats.title
-                        : _f.sections[0].section
-                    _tS.index.exist = true
-                    _tS.index.feats = feats
-                    _tS.index.markdown = markdown
-                }
-
-                // 返回文件分析结果
-                _tS.files = handleFiles(_notRootIndex)
-
-                // 目前只有一个section直接射出去就好了
-                _tmp.sections.push(_tS)
-            } else {
-                // 非根目录处理
-                _tmp.lang = _f.lang
-                // 遍历处理子 sections
-                for (let _section of _f.sections) {
+                if (_section.section === "_root") {
+                    // TODO 处理语言根目录
+                } else {
                     // section 的处理
-                    let _tS: IEffectiveFilesSection = {
-                        title: "",
-                        index: {
-                            exist: false,
-                            feats: {
-                                title: "",
-                                order: -1,
-                            },
-                            markdown: "",
-                        },
-                        files: [],
-                    }
-
                     let _notIndex: Array<string> = []
                     let _isIndex: string = ""
 
                     _section.files.forEach((f) => {
-                        const _fnameArray = f.split(/(\\\\|\/)/)
+                        const _fnameArray = f.split(/(\\|\/)/)
 
                         // 处理非 _index.md 文件
                         if (_fnameArray[_fnameArray.length] !== "_index.md") {
@@ -312,7 +266,6 @@ export function handleEffectiveFiles(): Array<IEffectiveFilesSectionWithLang> {
             }
             _backTmp.push(_tmp)
         }
-
         // TODO 支持非根目录 i18n 之后, 需要修改根目录排序
         let _back: Array<IEffectiveFilesSectionWithLang> = []
 
