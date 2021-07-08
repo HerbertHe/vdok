@@ -2,7 +2,11 @@
  * IVdok配置类型定义
  */
 export interface IVdokConfig {
-    root: string
+    dev?: boolean
+    base?: string
+    branch?: string
+    root?: string
+    footer?: string
 }
 
 /**
