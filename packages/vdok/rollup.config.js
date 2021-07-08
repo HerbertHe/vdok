@@ -22,10 +22,9 @@ export default {
         babel({ extensions, babelHelpers: "bundled", include: ["node/**/*"] }),
     ],
 
-    output: [
-        {
-            file: pkg.main,
-            format: "cjs",
-        },
-    ],
+    output: {
+        file: pkg.main,
+        format: "cjs",
+        banner: "#!/usr/bin/env node",
+    },
 }

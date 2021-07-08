@@ -1,5 +1,7 @@
 import fs from "fs"
 import path from "path"
+import { md5 } from "hash-wasm"
+
 import { readVdokConfig } from "./config"
 
 const cwd = process.cwd()
@@ -38,29 +40,41 @@ function generateDotVdok() {
 }
 
 /**
- * 移动Vdok的配置文件
- * TODO: 利用 hash 优化 io 操作性能
+ * Vdok配置模板
  */
-export function copyVdokConfig() {
-    generateDotVdok()
-    const filePath = path.join(dotVdokDir, "vdok.config.yml")
-    if (fs.existsSync(filePath)) {
-        // 比较 hash 再进行可能的写入操作
-        deleteAllFiles(filePath)
-    }
+const VdokConfigTemplate = String.raw` // Vdok Config File through automatic generation
 
-    fs.writeFileSync(filePath, readVdokConfig())
+export default defineConfig(/* Inject-Vdok-Config-Here */)
+`
+
+/**
+ * 写入配置文件
+ */
+async function writeVdokConfig() {
+    generateDotVdok()
+    const filePath = path.join(dotVdokDir, "vdok.config.ts")
+    const writeContent = VdokConfigTemplate.replace(
+        "/* Inject-Vdok-Config-Here */",
+        readVdokConfig()
+    )
+    if (fs.existsSync(filePath)) {
+        const content = fs.readFileSync(filePath, { encoding: "utf-8" })
+        if (!!content && await md5(content) === await md5(writeContent)) {
+            return
+        }
+    }
+    fs.writeFileSync(filePath, writeContent)
 }
+
+/**
+ * 移动Vdok的配置文件
+ */
+export function copyVdokConfig() {}
 
 /**
  * 移动文本文件, 考虑性能优化
  */
 function copyDocs() {}
-
-/**
- * 写入配置文件
- */
-function writeVdokConfig() {}
 
 /**
  * 初始化构建移动操作

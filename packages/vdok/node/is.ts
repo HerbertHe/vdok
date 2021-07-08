@@ -10,13 +10,9 @@ export function isIncludedInBCP47(tag: string): boolean {
     return tags(tag).valid()
 }
 
-/**
- * 判断是否处于i18n模式
- * @param cwd 命令执行路径
- */
 export function isI18nMode(cwd: string): boolean {
-    const dirs = fs.readdirSync(cwd).filter((item) => {
-        const p = path.join(cwd, item)
+    const dirs = fs.readdirSync(path.join(cwd, "docs")).filter((item) => {
+        const p = path.join(path.join(cwd, "docs"), item)
         return fs.lstatSync(p).isDirectory()
     })
 

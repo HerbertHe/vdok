@@ -1,10 +1,7 @@
 import fs from "fs"
 import path from "path"
+import { bgBlueBright, green } from "chalk"
 import { isI18nMode, isIncludedInBCP47 } from "./is"
-
-/**
- * TODO: 考虑将根目录的section改为 _root?
- */
 
 /**
  * 命令行执行路径
@@ -19,6 +16,20 @@ interface IDetectEffectiveSection {
 export interface IDetectEffectiveFiles {
     lang: string
     sections: Array<IDetectEffectiveSection>
+}
+
+function removePrefix(t: string, i18n: string): string {
+    if (!i18n) {
+        return t
+            .replace(path.join(cwd, "docs"), "")
+            .replace("\\", "")
+            .replace("/", "")
+    }
+
+    return t
+        .replace(path.join(cwd, "docs", i18n), "")
+        .replace("\\", "")
+        .replace("/", "")
 }
 
 /**
@@ -101,31 +112,36 @@ function detectAllFiles(dirp: string): Array<string> {
 
 export function detectEffectiveFiles(): Array<IDetectEffectiveFiles> {
     const p = path.join(cwd, "docs")
+
     if (!fs.existsSync(p)) {
         // TODO 扔出错误
-        throw new Error("No /docs dir Found!")
+        throw new Error("Folder /docs not found in current path!")
     }
+
+    let _back: Array<IDetectEffectiveFiles> = []
 
     // 判断是否处于i18n模式, 返回数据结构不同
     if (isI18nMode(cwd)) {
         const [_files, _dirs] = detectInI18nMode()
-        let _back: Array<IDetectEffectiveFiles> = []
-        let rootFiles: IDetectEffectiveFiles = {
-            lang: "",
-            sections: [
-                {
-                    section: "",
-                    files: _files,
-                },
-            ],
-        }
 
-        _back.push(rootFiles)
+        if (_files.length !== 0) {
+            let rootFiles: IDetectEffectiveFiles = {
+                lang: "",
+                sections: [
+                    {
+                        section: "_root",
+                        files: _files,
+                    },
+                ],
+            }
+
+            _back.push(rootFiles)
+        }
 
         for (let _dir of _dirs) {
             // 这里的 _dir 是完整路径
             let _fTmp: IDetectEffectiveFiles = {
-                lang: _dir.replace(cwd, ""),
+                lang: removePrefix(_dir, ""),
                 sections: [],
             }
 
@@ -134,7 +150,7 @@ export function detectEffectiveFiles(): Array<IDetectEffectiveFiles> {
             if (children.length === 0) continue
 
             let _nonSectionFile: IDetectEffectiveSection = {
-                section: "",
+                section: "_nonSection",
                 files: [],
             }
 
@@ -158,24 +174,23 @@ export function detectEffectiveFiles(): Array<IDetectEffectiveFiles> {
             _fTmp.sections.push(_nonSectionFile)
             _back.push(_fTmp)
         }
-
-        return _back
     } else {
         const [_files, _dirs] = detectNotInI18nMode()
-        let _back: Array<IDetectEffectiveFiles> = []
         let _f: IDetectEffectiveFiles = {
             lang: "",
-            sections: [
-                {
-                    section: "",
-                    files: _files,
-                },
-            ],
+            sections: [],
+        }
+
+        if (_files.length !== 0) {
+            _f.sections.push({
+                section: "_root",
+                files: _files,
+            })
         }
 
         for (let _dir of _dirs) {
             let _tmp: IDetectEffectiveSection = {
-                section: _dir.replace(cwd, ""),
+                section: removePrefix(_dir, ""),
                 files: detectAllFiles(_dir),
             }
 
@@ -183,7 +198,17 @@ export function detectEffectiveFiles(): Array<IDetectEffectiveFiles> {
         }
 
         _back.push(_f)
-
-        return _back
     }
+
+    if (process.env.VDOK_DEBUG === "DEBUG") {
+        console.log(
+            `${bgBlueBright("Detect Mode:")}  ${
+                isI18nMode(cwd) ? "i18n" : "normal"
+            }`
+        )
+        console.log(bgBlueBright("Detected:"))
+        console.log(green(_back))
+    }
+
+    return _back
 }
