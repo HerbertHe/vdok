@@ -17,7 +17,7 @@ interface IVdokConfig {
 /**
  * 合并 Vdok 的配置
  */
-function mergeVdokConfig(custom: IVdokConfig, def: IVdokConfig) {
+function mergeVdokConfig(custom: IVdokConfig, def: IVdokConfig): string {
     let _back: IVdokConfig = {}
     for (let item in def) {
         if (!custom[item]) {
@@ -26,25 +26,25 @@ function mergeVdokConfig(custom: IVdokConfig, def: IVdokConfig) {
             _back[item] = def[item]
         }
     }
-    return YAML.stringify(_back)
+    return Object.prototype.toString.call(_back)
 }
 
 /**
  * TODO: 默认 Vdok 的配置
  */
-function defaultVdokConfig() {
+function defaultVdokConfig(): IVdokConfig {
     const def: IVdokConfig = {}
     return def
 }
 
-export function readVdokConfig() {
+export function readVdokConfig(): string {
     const config = fs
         .readdirSync(cwd)
         .filter((f) => VdokYamlConfigRegExp.test(f))
 
     if (config.length === 0) {
         // 没有配置文件
-        return YAML.stringify(defaultVdokConfig())
+        return Object.prototype.toString.call(defaultVdokConfig())
     } else {
         // 有配置文件的读取和merge操作
         const configed = YAML.parse(
@@ -54,7 +54,7 @@ export function readVdokConfig() {
         )
 
         if (!configed) {
-            return YAML.stringify(defaultVdokConfig())
+            return Object.prototype.toString.call(defaultVdokConfig())
         } else {
             return mergeVdokConfig(configed as IVdokConfig, defaultVdokConfig())
         }

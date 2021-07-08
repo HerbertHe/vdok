@@ -68,7 +68,7 @@ export function sortSections(
     let _noOrdered: Array<IEffectiveFilesSection> = []
 
     // TODO 支持根目录 i18n 这里需要修改
-    sections.slice(1, sections.length).forEach((_section) => {
+    sections.slice(1, sections.length - 1).forEach((_section) => {
         if (
             !_section.index.exist ||
             (_section.index.exist &&
