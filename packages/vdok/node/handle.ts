@@ -13,6 +13,11 @@ export interface IEffectiveFilesSectionIndex {
     markdown?: string
 }
 
+/**
+ * 文件
+ * 特性
+ * 源文本内容
+ */
 export type BackFileItemType = [string, IArticleFeatures, string]
 
 export interface IEffectiveFilesSection {
@@ -103,7 +108,6 @@ function sortSections(
 function handleSection(
     _section: IDetectEffectiveSection
 ): IEffectiveFilesSection {
-    console.log(`当前处理的section: ${_section.section}`)
     let _tS: IEffectiveFilesSection = {
         title: "",
         name: _section.section,
@@ -154,7 +158,6 @@ function handleSection(
             const [feats, markdown] = analyzerArticle(
                 fs.readFileSync(_isIndex, { encoding: "utf-8" })
             )
-            console.log(markdown)
             _tS.title = !!feats.title ? feats.title : _section.section
             _tS.index.exist = true
             _tS.index.feats = feats
@@ -171,7 +174,10 @@ function handleSection(
 /**
  * 有效文件处理
  */
-export function handleEffectiveFiles(): Array<IEffectiveFilesSectionWithLang> {
+export function handleEffectiveFiles(): [
+    boolean,
+    Array<IEffectiveFilesSectionWithLang>
+] {
     const _fs: Array<IDetectEffectiveFiles> = detectEffectiveFiles()
 
     if (_fs.length === 0) {
@@ -202,7 +208,7 @@ export function handleEffectiveFiles(): Array<IEffectiveFilesSectionWithLang> {
         _back.sections = sortSections(_tmp.sections)
 
         // 返回结果
-        return [_back]
+        return [false, [_back]]
     } else {
         // 处理 i18n 模式
         let _backTmp: Array<IEffectiveFilesSectionWithLang> = []
@@ -217,7 +223,6 @@ export function handleEffectiveFiles(): Array<IEffectiveFilesSectionWithLang> {
             _tmp.lang = _f.lang
             // 遍历处理子 sections
             for (let _section of _f.sections) {
-                console.log(`当前section: ${_f.lang + "/" + _section.section}`)
                 const _tS = handleSection(_section)
                 if (_section.section === "_root") {
                     _tmp.sections.unshift(_tS)
@@ -244,6 +249,6 @@ export function handleEffectiveFiles(): Array<IEffectiveFilesSectionWithLang> {
             _back.push(_tmp)
         }
 
-        return _back
+        return [true, _back]
     }
 }

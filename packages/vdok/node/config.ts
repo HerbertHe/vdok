@@ -2,17 +2,14 @@ import path from "path"
 import fs from "fs"
 import YAML from "yaml"
 
+import { IVdokConfig } from "@herberthe/vdok-types"
+
 const cwd = process.cwd()
 
 /**
- * TODO: 不再支持 .ts 配置文件, 注意在 client 端修正!!
  * 后缀优先级排序 .yaml > .yml
  */
 const VdokYamlConfigRegExp = /vdok.config.y(a)?ml/
-
-interface IVdokConfig {
-    [index: string]: any
-}
 
 /**
  * 合并 Vdok 的配置
