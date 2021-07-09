@@ -12,7 +12,7 @@ import { isI18nMode, isIncludedInBCP47 } from "./is"
  */
 const cwd = process.cwd()
 
-interface IDetectEffectiveSection {
+export interface IDetectEffectiveSection {
     section: string
     files: Array<string>
 }

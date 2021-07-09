@@ -1,7 +1,11 @@
 import fs from "fs"
 
 import { analyzerArticle, IArticleFeatures } from "./analyzers"
-import { detectEffectiveFiles, IDetectEffectiveFiles } from "./detect"
+import {
+    detectEffectiveFiles,
+    IDetectEffectiveFiles,
+    IDetectEffectiveSection,
+} from "./detect"
 
 export interface IEffectiveFilesSectionIndex {
     exist: boolean
@@ -9,11 +13,13 @@ export interface IEffectiveFilesSectionIndex {
     markdown?: string
 }
 
+export type BackFileItemType = [string, IArticleFeatures, string]
+
 export interface IEffectiveFilesSection {
     title: string
     name: string
     index: IEffectiveFilesSectionIndex
-    files: Array<[IArticleFeatures, string]>
+    files: Array<BackFileItemType>
 }
 
 export interface IEffectiveFilesSectionWithLang {
@@ -25,21 +31,23 @@ export interface IEffectiveFilesSectionWithLang {
  * 文件处理
  * @param files 发现的文件
  */
-export function handleFiles(
-    files: Array<string>
-): Array<[IArticleFeatures, string]> {
-    let _raw: Array<[IArticleFeatures, string]> = []
+export function handleFiles(files: Array<string>): Array<BackFileItemType> {
+    let _raw: Array<BackFileItemType> = []
     for (let f of files) {
         const content = fs.readFileSync(f, { encoding: "utf-8" })
         const res = analyzerArticle(content)
-        _raw.push(res)
+        const fileName = f
+            .split(/(\/|\\)/)
+            .filter((f) => /.md$/.test(f))[0]
+            .replace(/.md/, "")
+        _raw.push([fileName, ...res])
     }
 
-    let _ordered: Array<[IArticleFeatures, string]> = []
-    let _noOrdered: Array<[IArticleFeatures, string]> = []
+    let _ordered: Array<BackFileItemType> = []
+    let _noOrdered: Array<BackFileItemType> = []
 
     _raw.forEach((f) => {
-        if (f[0].order !== 0) {
+        if (f[1].order !== 0) {
             _noOrdered.push(f)
         } else {
             _ordered.push(f)
@@ -51,7 +59,7 @@ export function handleFiles(
         return _raw
     } else {
         const _sorted = _ordered.sort(
-            ([f1], [f2]) => (f1.order as number) - (f2.order as number)
+            ([, f1], [, f2]) => (f1.order as number) - (f2.order as number)
         )
         return _sorted.concat(_noOrdered)
     }
@@ -68,7 +76,7 @@ function sortSections(
     let _ordered: Array<IEffectiveFilesSection> = []
     let _noOrdered: Array<IEffectiveFilesSection> = []
 
-    sections.slice(1, sections.length - 1).forEach((_section) => {
+    sections.slice(1, sections.length).forEach((_section) => {
         if (
             !_section.index.exist ||
             (_section.index.exist &&
@@ -92,6 +100,74 @@ function sortSections(
     }
 }
 
+function handleSection(
+    _section: IDetectEffectiveSection
+): IEffectiveFilesSection {
+    console.log(`当前处理的section: ${_section.section}`)
+    let _tS: IEffectiveFilesSection = {
+        title: "",
+        name: _section.section,
+        index: {
+            exist: false,
+            feats: {
+                title: "",
+                order: -1,
+            },
+            markdown: "",
+        },
+        files: [],
+    }
+
+    if (_section.files.length === 0) {
+        return _tS
+    }
+
+    let _notIndex: Array<string> = []
+    let _isIndex: string = ""
+
+    _section.files.forEach((f) => {
+        const _fnameArray = f.split(/(\\|\/)/)
+
+        // 处理非 _index.md 文件
+        if (_fnameArray[_fnameArray.length - 1] !== "_index.md") {
+            _notIndex.push(f)
+        } else {
+            _isIndex = f
+        }
+    })
+
+    if (_section.section === "_root") {
+        // TODO 根目录/语言根目录 存在 _index.md 文件
+        if (_notIndex.length !== _section.files.length) {
+            const [feats, markdown] = analyzerArticle(
+                fs.readFileSync(_isIndex, { encoding: "utf-8" })
+            )
+            _tS.index.exist = true
+            _tS.index.feats = feats
+            _tS.index.markdown = markdown
+        }
+    } else {
+        _tS.name === _section.section
+        // section 存在 _index.md 文件
+        if (_notIndex.length !== _section.files.length) {
+            // 处理 section 的 _index.md 文件
+            const [feats, markdown] = analyzerArticle(
+                fs.readFileSync(_isIndex, { encoding: "utf-8" })
+            )
+            console.log(markdown)
+            _tS.title = !!feats.title ? feats.title : _section.section
+            _tS.index.exist = true
+            _tS.index.feats = feats
+            _tS.index.markdown = markdown
+        }
+    }
+
+    // 返回文件分析结果
+    _tS.files = handleFiles(_notIndex)
+
+    return _tS
+}
+
 /**
  * 有效文件处理
  */
@@ -110,87 +186,13 @@ export function handleEffectiveFiles(): Array<IEffectiveFilesSectionWithLang> {
         }
 
         for (let _section of _fs[0].sections) {
+            const _tS = handleSection(_section)
+
             // 单文件默认扔到最前面, 要排除 _index.md 文件
             if (_section.section === "_root") {
-                let _tS: IEffectiveFilesSection = {
-                    title: "",
-                    name: "",
-                    index: {
-                        exist: false,
-                        feats: {
-                            title: "",
-                            order: -1,
-                        },
-                        markdown: "",
-                    },
-                    files: [],
-                }
-                let _notIndex: Array<string> = []
-                let _isIndex: string = ""
-
-                _section.files.forEach((f) => {
-                    const _fnameArray = f.split(/(\\|\/)/)
-
-                    // 处理非 _index.md 文件
-                    if (_fnameArray[_fnameArray.length] !== "_index.md") {
-                        _notIndex.push(f)
-                    } else {
-                        _isIndex === f
-                    }
-                })
-
-                // 根目录 存在 _index.md 文件
-                if (_notIndex.length !== _section.files.length) {
-                    // TODO 处理 根目录的 _index.md 文件
-                }
-
-                // 返回文件分析结果
-                _tS.files = handleFiles(_notIndex)
-
                 // 头部插入根目录文件
                 _tmp.sections.unshift(_tS)
             } else {
-                // section 的处理
-                let _tS: IEffectiveFilesSection = {
-                    title: "",
-                    name: _section.section,
-                    index: {
-                        exist: false,
-                        feats: {
-                            title: "",
-                            order: -1,
-                        },
-                        markdown: "",
-                    },
-                    files: [],
-                }
-
-                let _notIndex: Array<string> = []
-                let _isIndex: string = ""
-
-                _section.files.forEach((f) => {
-                    const _fnameArray = f.split(/(\\|\/)/)
-
-                    // 处理非 _index.md 文件
-                    if (_fnameArray[_fnameArray.length] !== "_index.md") {
-                        _notIndex.push(f)
-                    } else {
-                        _isIndex === f
-                    }
-                })
-
-                // section 存在 _index.md 文件
-                if (_notIndex.length !== _section.files.length) {
-                    // 处理 section 的 _index.md 文件
-                    const [feats, markdown] = analyzerArticle(_isIndex)
-                    _tS.title = !!feats.title ? feats.title : _section.section
-                    _tS.index.exist = true
-                    _tS.index.feats = feats
-                    _tS.index.markdown = markdown
-                }
-
-                // 返回文件分析结果
-                _tS.files = handleFiles(_notIndex)
                 _tmp.sections.push(_tS)
             }
         }
@@ -215,66 +217,26 @@ export function handleEffectiveFiles(): Array<IEffectiveFilesSectionWithLang> {
             _tmp.lang = _f.lang
             // 遍历处理子 sections
             for (let _section of _f.sections) {
-                let _tS: IEffectiveFilesSection = {
-                    title: "",
-                    name: _section.section,
-                    index: {
-                        exist: false,
-                        feats: {
-                            title: "",
-                            order: -1,
-                        },
-                        markdown: "",
-                    },
-                    files: [],
-                }
-
+                console.log(`当前section: ${_f.lang + "/" + _section.section}`)
+                const _tS = handleSection(_section)
                 if (_section.section === "_root") {
-                    // TODO 处理语言根目录
+                    _tmp.sections.unshift(_tS)
                 } else {
-                    // section 的处理
-                    let _notIndex: Array<string> = []
-                    let _isIndex: string = ""
-
-                    _section.files.forEach((f) => {
-                        const _fnameArray = f.split(/(\\|\/)/)
-
-                        // 处理非 _index.md 文件
-                        if (_fnameArray[_fnameArray.length] !== "_index.md") {
-                            _notIndex.push(f)
-                        } else {
-                            _isIndex === f
-                        }
-                    })
-
-                    // section 存在 _index.md 文件
-                    if (_notIndex.length !== _section.files.length) {
-                        // 处理 section 的 _index.md 文件
-                        const [feats, markdown] = analyzerArticle(_isIndex)
-                        _tS.title = !!feats.title
-                            ? feats.title
-                            : _section.section
-                        _tS.index.exist = true
-                        _tS.index.feats = feats
-                        _tS.index.markdown = markdown
-                    }
-
-                    // 返回文件分析结果
-                    _tS.files = handleFiles(_notIndex)
                     _tmp.sections.push(_tS)
                 }
             }
             _backTmp.push(_tmp)
         }
-        // TODO 支持非根目录 i18n 之后, 需要修改根目录排序
+
         let _back: Array<IEffectiveFilesSectionWithLang> = []
 
         // 这里需要遍历所有的语言进行文档排序
         for (let _bT of _backTmp) {
             let _tmp: IEffectiveFilesSectionWithLang = _bT
+
+            // 章节目录无文件
             if (_bT.sections.length === 0) {
-                // 根目录文件不参与排序
-                _tmp.sections = _bT.sections
+                continue
             } else {
                 _tmp.sections = sortSections(_bT.sections)
             }
