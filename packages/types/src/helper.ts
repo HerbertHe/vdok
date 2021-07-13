@@ -7,6 +7,7 @@ export interface IVdokConfig {
     base?: string
     branch?: string
     root?: string
+    lang?: string
     footer?: string
 }
 

@@ -21,3 +21,8 @@ export interface ISideNavs {
     headers?: Array<IHeaderItem>
     navs: Array<ISideNavSection>
 }
+
+export interface IRouteItem {
+    lang: string
+    sections: Array<ISideNavSection>
+}

@@ -17,6 +17,10 @@ interface ISideNavs {
     headers?: Array<IHeaderItem>;
     navs: Array<ISideNavSection>;
 }
+interface IRouteItem {
+    lang: string;
+    sections: Array<ISideNavSection>;
+}
 
 /**
  * IVdok配置类型定义
@@ -27,6 +31,7 @@ interface IVdokConfig {
     base?: string;
     branch?: string;
     root?: string;
+    lang?: string;
     footer?: string;
 }
 /**
@@ -35,4 +40,4 @@ interface IVdokConfig {
  */
 declare function defineConfig(config: IVdokConfig): IVdokConfig;
 
-export { IHeader, IHeaderItem, ISideNavItem, ISideNavSection, ISideNavs, IVdokConfig, defineConfig };
+export { IHeader, IHeaderItem, IRouteItem, ISideNavItem, ISideNavSection, ISideNavs, IVdokConfig, defineConfig };

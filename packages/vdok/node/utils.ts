@@ -20,3 +20,24 @@ export function deleteAllFiles(p: string) {
         fs.rmdirSync(p)
     }
 }
+
+/**
+ * 文件夹递归复制
+ */
+export function copyDirectory(src: string, dest: string) {
+    if (!fs.existsSync(dest)) {
+        fs.mkdirSync(dest, { recursive: true })
+    }
+
+    const fS = fs.readdirSync(src)
+    fS.forEach((item) => {
+        const p = path.join(src, item)
+        const isDir = fs.lstatSync(p).isDirectory()
+
+        if (isDir) {
+            copyDirectory(p, path.join(dest, item))
+        } else {
+            fs.copyFileSync(p, path.join(dest, item))
+        }
+    })
+}

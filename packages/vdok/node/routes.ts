@@ -1,10 +1,9 @@
-import { ISideNavSection, ISideNavItem } from "@herberthe/vdok-types"
+import {
+    ISideNavSection,
+    ISideNavItem,
+    IRouteItem,
+} from "@herberthe/vdok-types"
 import { handleEffectiveFiles, IEffectiveFilesSection } from "./handle"
-
-interface IRouteItem {
-    lang: string
-    sections: Array<ISideNavSection>
-}
 
 function generateSideNavSection(
     lang: string,
