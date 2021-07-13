@@ -2,6 +2,7 @@
  * IVdok配置类型定义
  */
 export interface IVdokConfig {
+    [key: string]: any
     dev?: boolean
     base?: string
     branch?: string

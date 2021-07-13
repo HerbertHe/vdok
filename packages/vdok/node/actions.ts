@@ -3,30 +3,11 @@ import path from "path"
 import { md5 } from "hash-wasm"
 
 import { readVdokConfig } from "./config"
+import { generateRoutes } from "./routes"
 
 const cwd = process.cwd()
 
 const dotVdokDir = path.join(cwd, ".vdok")
-
-/**
- * 删除文件
- * @param p 路径
- */
-function deleteAllFiles(p: string) {
-    if (fs.existsSync(p)) {
-        const files = fs.readdirSync(p)
-        files.forEach((f) => {
-            const tP = path.join(p, f)
-            const isDir = fs.lstatSync(tP).isDirectory()
-            if (isDir) {
-                deleteAllFiles(tP)
-            } else {
-                fs.unlinkSync(tP)
-            }
-        })
-        fs.rmdirSync(p)
-    }
-}
 
 /**
  * 本地生成 .vdok 临时文件夹
@@ -59,11 +40,16 @@ async function writeVdokConfig() {
     )
     if (fs.existsSync(filePath)) {
         const content = fs.readFileSync(filePath, { encoding: "utf-8" })
-        if (!!content && await md5(content) === await md5(writeContent)) {
+        if (!!content && (await md5(content)) === (await md5(writeContent))) {
             return
         }
     }
     fs.writeFileSync(filePath, writeContent)
+}
+
+async function writeRoutesInfos() {
+    // 写入 routes 配置文件
+    // 模板需要判断i18n的状态
 }
 
 /**

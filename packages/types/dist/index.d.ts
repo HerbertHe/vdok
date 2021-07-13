@@ -22,6 +22,7 @@ interface ISideNavs {
  * IVdok配置类型定义
  */
 interface IVdokConfig {
+    [key: string]: any;
     dev?: boolean;
     base?: string;
     branch?: string;
