@@ -6,6 +6,10 @@
   "homepage": "https://github.com/HerbertHe/vdok#readme",
   "license": "MIT",
   "main": "./dist/index.js",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
   "bin": {
     "vdok": "./dist/index.js"
   },
