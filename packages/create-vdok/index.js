@@ -28,7 +28,7 @@ async function init() {
             type: "text",
             name: "projName",
             message: "项目名称",
-            initial: "vdok",
+            initial: "vdok-docs-template",
         })
 
         targetDir = projName.trim()
@@ -121,8 +121,7 @@ async function init() {
             return
         }
 
-        // 记录选择的包管理器
-        const pkg = require("./package.json")
+        // 二写入 pkg
         pkg.agent = agent
 
         write("package.json", JSON.stringify(pkg, null, 2))

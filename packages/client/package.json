@@ -5,6 +5,17 @@
   "author": "Herbert <herbert.he0229@gmail.com>",
   "homepage": "https://github.com/HerbertHe/vdok#readme",
   "license": "MIT",
+  "files": [
+    "src",
+    ".gitignore",
+    "index.html",
+    "package.json",
+    "README.md",
+    "tsconfig.json",
+    "vdok.config.ts",
+    "vite.config.ts",
+    "windi.config.ts"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/HerbertHe/vdok.git"

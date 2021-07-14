@@ -3,4 +3,3 @@ node_modules
 dist
 dist-ssr
 *.local
-vdok.config.ts
