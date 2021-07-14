@@ -141,12 +141,28 @@ export function copyMarkdownFile(src: string, dest: string) {
     fs.copyFileSync(src, dest)
 }
 
+const VdokClientFromNodeModules = path.join(
+    cwd,
+    "node_modules",
+    "@herberthe",
+    "vdok-client"
+)
+
+/**
+ * 移动 vdok client文件
+ */
+export function copyVdokClient() {
+    copyDirectory(VdokClientFromNodeModules, dotVdokDir)
+}
+
 /**
  * 初始化构建操作
  */
 export function initialBuild() {
     // 生成 .vdok 文件夹
     generateDotVdok()
+    // 移动vdok-client
+    copyVdokClient()
     // 移动配置文件
     writeVdokConfig()
     // 移动 docs

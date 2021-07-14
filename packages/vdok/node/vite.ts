@@ -1,7 +1,8 @@
 // 自定义修改vite设置
 import path from "path"
 import fs from "fs"
-import { createServer, build } from "vite"
+
+const { createServer, build } = require("vite")
 
 import { deleteAllFiles } from "./utils"
 

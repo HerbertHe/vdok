@@ -1,5 +1,6 @@
 {
     "name": "vdok-template",
+    "vdok": true,
     "scripts": {
         "dev": "vdok dev",
         "build": "vdok build"
