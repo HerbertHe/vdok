@@ -9,6 +9,12 @@ const extensions = [".ts", ".js"]
 
 export default {
     input: "./node/cli.ts",
+    external: [
+        "language-subtag-registry/data/json/index",
+        "language-subtag-registry/data/json/macrolanguage",
+        "language-subtag-registry/data/json/meta",
+        "language-subtag-registry/data/json/registry",
+    ],
 
     plugins: [
         json(),

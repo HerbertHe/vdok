@@ -2,7 +2,7 @@
 import path from "path"
 import chokidar from "chokidar"
 
-const cwd = process.cwd()
+import { cwd } from "./constants"
 
 /**
  * 文件改动监听

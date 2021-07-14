@@ -1,16 +1,9 @@
 import fs from "fs"
 import path from "path"
+
 import { bgBlueBright, green } from "chalk"
 import { isI18nMode, isIncludedInBCP47 } from "./is"
-
-/**
- * TODO: i18n需要修改侦测逻辑, 需要屏蔽根目录文件, 并且所有的语言下的 _index.md 都视为 i18n 默认做兜底设计
- */
-
-/**
- * 命令行执行路径
- */
-const cwd = process.cwd()
+import { cwd } from "./constants"
 
 export interface IDetectEffectiveSection {
     section: string
@@ -42,7 +35,6 @@ function removePrefix(t: string, i18n: string): string {
 function detectInI18nMode(): Array<string> {
     const p = path.join(cwd, "docs")
     let _dirs: Array<string> = []
-    let _files: Array<string> = []
 
     const fd = fs.readdirSync(p)
 
@@ -115,7 +107,6 @@ export function detectEffectiveFiles(): Array<IDetectEffectiveFiles> {
     const p = path.join(cwd, "docs")
 
     if (!fs.existsSync(p)) {
-        // TODO 扔出错误
         throw new Error("Folder /docs not found in current path!")
     }
 

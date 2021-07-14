@@ -1,25 +1,31 @@
 import fs from "fs"
-import path from "path"
-import { bcryptVerify, md5 } from "hash-wasm"
+import { md5 } from "hash-wasm"
+import { execSync } from "child_process"
 import YAML from "yaml"
 
 import { readVdokConfig } from "./config"
 import { generateRoutes } from "./routes"
 import { copyDirectory } from "./utils"
 
-const cwd = process.cwd()
-
-const dotVdokDir = path.join(cwd, ".vdok")
-const VdokRawConfigYamlPath = path.join(cwd, "vdok.config.yaml")
-const VdokRawConfigYmlPath = path.join(cwd, "vdok.config.yml")
+import {
+    dotVdokDirPath,
+    rawDocsPath,
+    rawVdokConfigYamlPath,
+    rawVdokConfigYmlPath,
+    vdokClientFromNodeModulesPath,
+    vdokConfigPath,
+    vdokDocsPath,
+    vdokPackageJsonPath,
+    vdokRoutesPath,
+} from "./constants"
 
 /**
  * 本地生成 .vdok 临时文件夹
  */
 function generateDotVdok() {
-    if (!fs.existsSync(dotVdokDir)) {
+    if (!fs.existsSync(dotVdokDirPath)) {
         // 生成文件夹
-        fs.mkdirSync(dotVdokDir, { recursive: true })
+        fs.mkdirSync(dotVdokDirPath, { recursive: true })
     }
     return
 }
@@ -32,8 +38,6 @@ const VdokConfigTemplate = String.raw`// Vdok Config File through automatic gene
 export default defineConfig(/* Inject-Vdok-Config-Here */)
 `
 
-const VdokConfigPath = path.join(dotVdokDir, "vdok.config.ts")
-
 /**
  * 写入配置文件
  */
@@ -43,14 +47,14 @@ export async function writeVdokConfig() {
         readVdokConfig()
     )
 
-    if (fs.existsSync(VdokConfigPath)) {
-        const content = fs.readFileSync(VdokConfigPath, { encoding: "utf-8" })
+    if (fs.existsSync(vdokConfigPath)) {
+        const content = fs.readFileSync(vdokConfigPath, { encoding: "utf-8" })
         if (!!content && (await md5(content)) === (await md5(writeContent))) {
             return
         }
     }
 
-    fs.writeFileSync(VdokConfigPath, writeContent)
+    fs.writeFileSync(vdokConfigPath, writeContent)
 }
 
 /**
@@ -74,24 +78,24 @@ const route =
 export { routes, route }
 `
 
-const VdokRoutesPath = path.join(cwd, ".vdok", "src", "routes.ts")
-
 export async function writeRoutesInfos() {
-    if (!fs.existsSync(VdokRoutesPath)) {
-        fs.unlinkSync(VdokRoutesPath)
+    if (!fs.existsSync(vdokRoutesPath)) {
+        fs.unlinkSync(vdokRoutesPath)
     }
 
     let lang: string = ""
 
-    if (fs.existsSync(VdokRawConfigYamlPath)) {
-        const { lang: configLang } = YAML.parse(
-            fs.readFileSync(VdokRawConfigYamlPath, { encoding: "utf-8" })
-        )
+    if (fs.existsSync(rawVdokConfigYamlPath)) {
+        const { lang: configLang } =
+            YAML.parse(
+                fs.readFileSync(rawVdokConfigYamlPath, { encoding: "utf-8" })
+            ) || {}
         lang = !!configLang ? configLang : ""
-    } else if (fs.existsSync(VdokRawConfigYmlPath)) {
-        const { lang: configLang } = YAML.parse(
-            fs.readFileSync(VdokRawConfigYmlPath, { encoding: "utf-8" })
-        )
+    } else if (fs.existsSync(rawVdokConfigYmlPath)) {
+        const { lang: configLang } =
+            YAML.parse(
+                fs.readFileSync(rawVdokConfigYmlPath, { encoding: "utf-8" })
+            ) || {}
         lang = !!configLang ? configLang : ""
     }
 
@@ -104,7 +108,7 @@ export async function writeRoutesInfos() {
     }
 
     fs.writeFileSync(
-        VdokRoutesPath,
+        vdokRoutesPath,
         JSON.stringify(
             VdokRoutesTemplate.replace(
                 "/* inject-routes-here */",
@@ -117,14 +121,11 @@ export async function writeRoutesInfos() {
     )
 }
 
-const ProjDocsPath = path.join(cwd, "docs")
-const VdokDocsPath = path.join(dotVdokDir, "public", "docs")
-
 /**
  * 移动文本文件, 考虑性能优化
  */
 export function copyDocs() {
-    copyDirectory(ProjDocsPath, VdokDocsPath)
+    copyDirectory(rawDocsPath, vdokDocsPath)
 }
 
 /**
@@ -141,18 +142,45 @@ export function copyMarkdownFile(src: string, dest: string) {
     fs.copyFileSync(src, dest)
 }
 
-const VdokClientFromNodeModules = path.join(
-    cwd,
-    "node_modules",
-    "@herberthe",
-    "vdok-client"
-)
-
 /**
  * 移动 vdok client文件
  */
 export function copyVdokClient() {
-    copyDirectory(VdokClientFromNodeModules, dotVdokDir)
+    copyDirectory(vdokClientFromNodeModulesPath, dotVdokDirPath)
+}
+
+/**
+ * 下载 .vdok 下面的 package 的包
+ */
+export function installPackage() {
+    const { dependencies, devDependencies } =
+        JSON.parse(
+            fs.readFileSync(vdokPackageJsonPath, {
+                encoding: "utf-8",
+            })
+        ) || {}
+
+    if (!dependencies && !devDependencies) {
+        return
+    }
+
+    let dependenciesDownload: Array<string> = []
+    let devDependenciesDownload: Array<string> = []
+
+    for (let item of dependencies) {
+        dependencies.push(`${item}@${dependencies[item]}`)
+    }
+
+    for (let item of devDependencies) {
+        devDependencies.push(`${item}@${devDependencies[item]}`)
+    }
+
+    // 这里得考虑使用什么包管理工具
+    const deps = dependenciesDownload.join(" ")
+    const devDeps = devDependenciesDownload.join(" ")
+
+    // 根目录执行下载指令
+    // execSync("")
 }
 
 /**
@@ -163,6 +191,9 @@ export function initialBuild() {
     generateDotVdok()
     // 移动vdok-client
     copyVdokClient()
+    // 根目录下载依赖
+    // 移动路由文件
+    writeRoutesInfos()
     // 移动配置文件
     writeVdokConfig()
     // 移动 docs
