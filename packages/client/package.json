@@ -1,6 +1,6 @@
 {
   "name": "@herberthe/vdok-client",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Vdok Client",
   "author": "Herbert <herbert.he0229@gmail.com>",
   "homepage": "https://github.com/HerbertHe/vdok#readme",
@@ -23,7 +23,7 @@
     "url": "https://github.com/HerbertHe/vdok/issues"
   },
   "devDependencies": {
-    "@herberthe/vdok-types": "^0.0.2",
+    "@herberthe/vdok-types": "^0.0.3",
     "@rollup/plugin-babel": "^5.3.0",
     "@rollup/plugin-commonjs": "^19.0.0",
     "@rollup/plugin-json": "^4.1.0",
