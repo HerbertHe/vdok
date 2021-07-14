@@ -87,6 +87,7 @@ async function init() {
     const pkg = require(path.join(templateDir, "package.json"))
 
     pkg.name = packageName
+    pkg.vdok = true
 
     write("package.json", JSON.stringify(pkg, null, 2))
 
@@ -119,6 +120,12 @@ async function init() {
         if (!agent) {
             return
         }
+
+        // 记录选择的包管理器
+        const pkg = require("./package.json")
+        pkg.agent = agent
+
+        write("package.json", JSON.stringify(pkg, null, 2))
 
         // 执行下载运行
         await execa(agent, ["install"], { stdio: "inherit", cwd: root })
