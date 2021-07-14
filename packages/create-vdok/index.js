@@ -128,7 +128,7 @@ async function init() {
 
         // 执行下载运行
         await execa(agent, ["install"], { stdio: "inherit", cwd: root })
-        await execa(agent, ["run", "dev"], { stdin: "inherit", cwd: "root" })
+        await execa(agent, ["run", "dev"], { stdin: "inherit", cwd: root })
     } else {
         console.log("稍后通过下述步骤启动:\n")
         if (root !== cwd) {

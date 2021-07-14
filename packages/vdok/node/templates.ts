@@ -2,6 +2,7 @@
  * Vdok配置模板
  */
 export const VdokConfigTemplate = String.raw`// Vdok Config File through automatic generation
+import { defineConfig } from "@herberthe/vdok-types"
 
 export default defineConfig(/* Inject-Vdok-Config-Here */)
 `

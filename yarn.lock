@@ -2251,6 +2251,13 @@
   resolved "https://registry.npmjs.org/@types/prettier/-/prettier-2.3.1.tgz#54dd88bdc7f49958329666af3779561e47d5dab3"
   integrity sha512-NVkb4p4YjI8E3O6+1m8I+8JlMpFZwfSbPGdaw0wXuyPRTEz0SLKwBUWNSO7Maoi8tQMPC8JLZNWkrcKPI7/sLA==
 
+"@types/prompts@^2.0.14":
+  version "2.0.14"
+  resolved "https://registry.nlark.com/@types/prompts/download/@types/prompts-2.0.14.tgz?cache=0&sync_timestamp=1625678722514&other_urls=https%3A%2F%2Fregistry.nlark.com%2F%40types%2Fprompts%2Fdownload%2F%40types%2Fprompts-2.0.14.tgz#10cb8899844bb0771cabe57c1becaaaca9a3b521"
+  integrity sha1-EMuImYRLsHccq+V8G+yqrKmjtSE=
+  dependencies:
+    "@types/node" "*"
+
 "@types/prop-types@*":
   version "15.7.3"
   resolved "https://registry.npmjs.org/@types/prop-types/-/prop-types-15.7.3.tgz#2ab0d5da2e5815f94b0b9d4b95d1e5f243ab2ca7"
