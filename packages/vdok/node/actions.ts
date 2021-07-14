@@ -1,7 +1,8 @@
 import fs from "fs"
 import { md5 } from "hash-wasm"
-import { execSync } from "child_process"
 import YAML from "yaml"
+import prompts from "prompts"
+import execa from "execa"
 
 import { readVdokConfig } from "./config"
 import { generateRoutes } from "./routes"
@@ -10,6 +11,7 @@ import { copyDirectory } from "./utils"
 import {
     dotVdokDirPath,
     rawDocsPath,
+    rawPackageJsonPath,
     rawVdokConfigYamlPath,
     rawVdokConfigYmlPath,
     vdokClientFromNodeModulesPath,
@@ -125,7 +127,7 @@ export function copyVdokClient() {
 /**
  * 下载 .vdok 下面的 package 的包
  */
-export function installPackage() {
+export async function installPackage() {
     const { dependencies, devDependencies } =
         JSON.parse(
             fs.readFileSync(vdokPackageJsonPath, {
@@ -140,20 +142,59 @@ export function installPackage() {
     let dependenciesDownload: Array<string> = []
     let devDependenciesDownload: Array<string> = []
 
-    for (let item of dependencies) {
-        dependencies.push(`${item}@${dependencies[item]}`)
+    for (let item in dependencies) {
+        dependenciesDownload.push(`${item}@${dependencies[item]}`)
     }
 
-    for (let item of devDependencies) {
-        devDependencies.push(`${item}@${devDependencies[item]}`)
+    for (let item in devDependencies) {
+        devDependenciesDownload.push(`${item}@${devDependencies[item]}`)
     }
 
     // 这里得考虑使用什么包管理工具
     const deps = dependenciesDownload.join(" ")
     const devDeps = devDependenciesDownload.join(" ")
 
+    console.log(deps)
+    console.log(devDeps)
+
     // 根目录执行下载指令
-    // execSync("")
+    const pkg =
+        JSON.parse(
+            fs.readFileSync(rawPackageJsonPath, { encoding: "utf-8" })
+        ) || {}
+
+    if (!pkg.agent) {
+        const { agent1 } = await prompts({
+            name: "agent1",
+            type: "select",
+            message: "选择包管理器",
+            choices: ["yarn", "npm"].map((v) => ({
+                value: v,
+                title: v,
+            })),
+            initial: "npm",
+        })
+
+        // 写入配置项文件
+        pkg.agent = agent1
+        fs.writeFileSync(rawPackageJsonPath, JSON.stringify(pkg), {
+            encoding: "utf-8",
+        })
+
+        await execa(agent1, [agent1 === "yarn" ? "add" : "install", deps])
+        await execa(agent1, [
+            agent1 === "yarn" ? "add --dev" : "install --dev",
+            devDeps,
+        ])
+    } else {
+        const agent = pkg.agent === "yarn" ? "yarn" : "npm"
+        await execa(agent, [agent === "yarn" ? "add" : "install", deps])
+        await execa(agent, [
+            agent === "yarn" ? "add" : "install",
+            devDeps,
+            "--dev"
+        ])
+    }
 }
 
 /**
@@ -165,6 +206,7 @@ export function initialBuild() {
     // 移动vdok-client
     copyVdokClient()
     // 根目录下载依赖
+    installPackage()
     // 移动路由文件
     writeRoutesInfos()
     // 移动配置文件
