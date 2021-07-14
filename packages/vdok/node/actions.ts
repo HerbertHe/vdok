@@ -19,6 +19,8 @@ import {
     vdokRoutesPath,
 } from "./constants"
 
+import { VdokConfigTemplate, VdokRoutesTemplate } from "./templates"
+
 /**
  * 本地生成 .vdok 临时文件夹
  */
@@ -29,14 +31,6 @@ function generateDotVdok() {
     }
     return
 }
-
-/**
- * Vdok配置模板
- */
-const VdokConfigTemplate = String.raw`// Vdok Config File through automatic generation
-
-export default defineConfig(/* Inject-Vdok-Config-Here */)
-`
 
 /**
  * 写入配置文件
@@ -56,27 +50,6 @@ export async function writeVdokConfig() {
 
     fs.writeFileSync(vdokConfigPath, writeContent)
 }
-
-/**
- * Vdok Routes 模板
- */
-const VdokRoutesTemplate = String.raw`// Vdok Routes File through automatic generation
-import { IRouteItem } from "@herberthe/vdok-types"
-import VdokConfig from "../vdok.config"
-
-const { lang } = VdokConfig
-
-const routes: Array<IRouteItem> = /* inject-routes-here */
-
-const route =
-    routes.length === 1
-        ? routes[0]
-        : !!lang
-        ? routes.filter((item) => item.lang === lang)
-        : routes[0]
-
-export { routes, route }
-`
 
 export async function writeRoutesInfos() {
     if (!fs.existsSync(vdokRoutesPath)) {
