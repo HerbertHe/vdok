@@ -6,6 +6,7 @@ import {
     IDetectEffectiveFiles,
     IDetectEffectiveSection,
 } from "./detect"
+import { debugExport, debugInfo } from "./utils"
 
 export interface IEffectiveFilesSectionIndex {
     exist: boolean
@@ -207,6 +208,12 @@ export function handleEffectiveFiles(): [
         const _back = _tmp
         _back.sections = sortSections(_tmp.sections)
 
+        if (process.env.VDOK_DEBUG === "DEBUG") {
+            console.log(
+                debugInfo("Handle EffectiveFilesSectionWithLang for normal")
+            )
+            console.log(debugExport(JSON.stringify(_back)))
+        }
         // 返回结果
         return [false, [_back]]
     } else {
@@ -247,6 +254,13 @@ export function handleEffectiveFiles(): [
             }
 
             _back.push(_tmp)
+        }
+
+        if (process.env.VDOK_DEBUG === "DEBUG") {
+            console.log(
+                debugInfo("Handle EffectiveFilesSectionWithLang for i18n")
+            )
+            console.log(debugExport(JSON.stringify(_back)))
         }
 
         return [true, _back]

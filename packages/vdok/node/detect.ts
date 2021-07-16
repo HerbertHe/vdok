@@ -1,9 +1,9 @@
 import fs from "fs"
 import path from "path"
 
-import { bgBlueBright, green } from "chalk"
 import { isI18nMode, isIncludedInBCP47 } from "./is"
 import { cwd } from "./constants"
+import { debugExport, debugInfo } from "./utils"
 
 export interface IDetectEffectiveSection {
     section: string
@@ -114,6 +114,10 @@ export function detectEffectiveFiles(): Array<IDetectEffectiveFiles> {
 
     // 判断是否处于i18n模式, 返回数据结构不同
     if (isI18nMode(cwd)) {
+        if (process.env.VDOK_DEBUG === "DEBUG") {
+            console.log(debugInfo("Detect Mode", "i18n"))
+        }
+
         const _dirs = detectInI18nMode()
 
         for (let _dir of _dirs) {
@@ -153,6 +157,10 @@ export function detectEffectiveFiles(): Array<IDetectEffectiveFiles> {
             _back.push(_fTmp)
         }
     } else {
+        if (process.env.VDOK_DEBUG === "DEBUG") {
+            console.log(debugInfo("Detect Mode", "normal"))
+        }
+
         const [_files, _dirs] = detectNotInI18nMode()
         let _f: IDetectEffectiveFiles = {
             lang: "",
@@ -179,13 +187,8 @@ export function detectEffectiveFiles(): Array<IDetectEffectiveFiles> {
     }
 
     if (process.env.VDOK_DEBUG === "DEBUG") {
-        console.log(
-            `${bgBlueBright("Detect Mode:")}  ${
-                isI18nMode(cwd) ? "i18n" : "normal"
-            }`
-        )
-        console.log(bgBlueBright("Detected:"))
-        console.log(green(_back))
+        console.log(debugInfo("Detected:"))
+        console.log(debugExport(JSON.stringify(_back)))
     }
 
     return _back

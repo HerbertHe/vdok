@@ -1,3 +1,4 @@
+import { bgBlueBright, green, yellow } from "chalk"
 import fs from "fs"
 import path from "path"
 
@@ -40,4 +41,16 @@ export function copyDirectory(src: string, dest: string) {
             fs.copyFileSync(p, path.join(dest, item))
         }
     })
+}
+
+export function debugWarning(warning: string): string {
+    return `${yellow(warning)}\n`
+}
+
+export function debugInfo(title: string, info?: string): string {
+    return `${bgBlueBright(title)}:\n${!!info ? `\n${green(info)}\n` : ""}`
+}
+
+export function debugExport(content: string): string {
+    return `${green(content)}\n`
 }

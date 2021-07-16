@@ -6,7 +6,7 @@ import execa from "execa"
 
 import { readVdokConfig } from "./config"
 import { generateRoutes } from "./routes"
-import { copyDirectory } from "./utils"
+import { copyDirectory, debugInfo } from "./utils"
 
 import {
     dotVdokDirPath,
@@ -84,11 +84,9 @@ export async function writeRoutesInfos() {
 
     fs.writeFileSync(
         vdokRoutesPath,
-        JSON.stringify(
-            VdokRoutesTemplate.replace(
-                "/* inject-routes-here */",
-                JSON.stringify(generateRoutes())
-            )
+        VdokRoutesTemplate.replace(
+            "/* inject-routes-here */",
+            JSON.stringify(generateRoutes())
         ),
         {
             encoding: "utf-8",
@@ -154,8 +152,10 @@ export async function installPackage() {
     const deps = dependenciesDownload.join(" ")
     const devDeps = devDependenciesDownload.join(" ")
 
-    console.log(deps)
-    console.log(devDeps)
+    if (process.env.VDOK_DEBUG === "DEBUG") {
+        console.log(debugInfo("Vdok Client Dependencies", deps))
+        console.log(debugInfo("Vdok Client Dev Dependencies", devDeps))
+    }
 
     // 根目录执行下载指令
     const pkg =
@@ -192,7 +192,7 @@ export async function installPackage() {
         await execa(agent, [
             agent === "yarn" ? "add" : "install",
             devDeps,
-            "--dev"
+            "--dev",
         ])
     }
 }

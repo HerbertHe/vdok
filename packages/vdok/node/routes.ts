@@ -4,16 +4,27 @@ import {
     IRouteItem,
 } from "@herberthe/vdok-types"
 import { handleEffectiveFiles, IEffectiveFilesSection } from "./handle"
+import { debugExport, debugInfo } from "./utils"
 
 function generateSideNavSection(
     lang: string,
     section: IEffectiveFilesSection
-): ISideNavSection {
+): ISideNavSection | null {
     let sideNavSectionTmp: ISideNavSection = {
         section: "",
         title: "",
         index: "",
         navs: [],
+    }
+
+    if (process.env.VDOK_DEBUG === "DEBUG") {
+        console.log(debugInfo("Generate Side Nav Section Start"))
+        console.log(debugExport(`${lang}\n${JSON.stringify(section)}`))
+    }
+
+    // 没有文件的时候直接跳过
+    if (section.files.length === 0) {
+        return null
     }
 
     sideNavSectionTmp.index = section.index.exist
@@ -44,9 +55,10 @@ export function generateRoutes(): Array<IRouteItem> {
 
             tr.sections.forEach((section) => {
                 if (section.name !== "_root") {
-                    langSectionTmp.sections.push(
-                        generateSideNavSection(tr.lang, section)
-                    )
+                    const sections = generateSideNavSection(tr.lang, section)
+                    if (!!sections) {
+                        langSectionTmp.sections.push(sections)
+                    }
                 }
                 // 根目录暂不处理
             })
@@ -54,22 +66,37 @@ export function generateRoutes(): Array<IRouteItem> {
             _back.push(langSectionTmp)
         })
 
+        if (process.env.VDOK_DEBUG === "DEBUG") {
+            console.log(debugInfo("Generate Routes for i18n"))
+            console.log(debugExport(JSON.stringify(_back)))
+        }
+
         return _back
     } else {
         // 非 i18n 路由生成
         let _sections: Array<ISideNavSection> = []
         tree[0].sections.forEach((section) => {
             if (section.name !== "_root") {
-                _sections.push(generateSideNavSection("", section))
+                const sections = generateSideNavSection("", section)
+                if (!!sections) {
+                    _sections.push(sections)
+                }
             }
             // 根目录暂时不处理
         })
 
-        return [
+        const _back = [
             {
                 lang: "",
                 sections: _sections,
             },
         ]
+
+        if (process.env.VDOK_DEBUG === "DEBUG") {
+            console.log(debugInfo("Generate Routes for normal"))
+            console.log(debugExport(JSON.stringify(_back)))
+        }
+
+        return _back
     }
 }

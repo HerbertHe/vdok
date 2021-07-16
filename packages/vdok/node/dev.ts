@@ -32,7 +32,7 @@ export async function runDev() {
     initialBuild()
 
     // 启动 vite 服务
-    await startViteServer()
+    // await startViteServer()
 
     // 监听文件修改
 }
