@@ -4,6 +4,7 @@ import { startViteServer } from "./vite"
 import { debugInfo, deleteAllFiles } from "./utils"
 import { initialBuild } from "./actions"
 import { dotVdokDirPath, rawDocsPath, rawPackageJsonPath } from "./constants"
+import { runWatch } from "./watch"
 
 export async function runDev() {
     if (process.env.VDOK_DEBUG === "DEBUG") {
@@ -32,10 +33,12 @@ export async function runDev() {
         deleteAllFiles(dotVdokDirPath)
     }
 
-    initialBuild()
+    await initialBuild()
 
     // 启动 vite 服务
-    // await startViteServer()
+    await startViteServer()
 
     // 监听文件修改
+    // BUG fsevents on Windows
+    // runWatch()
 }

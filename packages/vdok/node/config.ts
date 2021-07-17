@@ -2,8 +2,8 @@ import path from "path"
 import fs from "fs"
 import YAML from "yaml"
 
-import { IVdokConfig } from "@herberthe/vdok-types"
-import { cwd, vdokYamlConfigRegExp, defaultVdokConfig } from "./constants"
+import { IVdokConfig, defaultVdokConfig } from "@herberthe/vdok-types"
+import { cwd, vdokYamlConfigRegExp } from "./constants"
 
 /**
  * 后缀优先级排序 .yaml > .yml

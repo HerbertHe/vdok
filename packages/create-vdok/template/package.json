@@ -3,11 +3,15 @@
     "vdok": true,
     "scripts": {
         "dev": "vdok dev",
-        "build": "vdok build"
+        "build": "vdok build",
+        "debug": "cross-env VDOK_DEBUG=DEBUG vdok dev"
     },
     "dependencies": {
         "@herberthe/vdok-client": "^0.0.1",
         "@herberthe/vdok-types": "^0.0.1",
         "@herberthe/vdok-cli": "^0.0.1"
+    },
+    "devDependencies": {
+        "cross-env": "^7.0.3"
     }
 }

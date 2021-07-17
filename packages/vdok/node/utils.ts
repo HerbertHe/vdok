@@ -1,4 +1,4 @@
-import { bgBlue, green, yellow } from "chalk"
+import { bgBlue, green, yellow, magentaBright } from "chalk"
 import fs from "fs"
 import path from "path"
 
@@ -48,7 +48,7 @@ export function debugWarning(warning: string): string {
 }
 
 export function debugInfo(title: string, info?: string): string {
-    return `${bgBlue(title)} ---> \n${!!info ? `\n${green(info)}\n` : ""}`
+    return `${bgBlue(title)} ---> \n${!!info ? `${magentaBright(info)}\n` : ""}`
 }
 
 export function debugExport(content: string): string {

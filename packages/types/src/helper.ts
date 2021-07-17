@@ -18,3 +18,17 @@ export interface IVdokConfig {
 export function defineConfig(config: IVdokConfig) {
     return config
 }
+
+/**
+ * 默认配置项
+ */
+export function defaultVdokConfig(): IVdokConfig {
+    return {
+        dev: true,
+        base: "",
+        branch: "main",
+        root: "",
+        lang: "",
+        footer: "",
+    }
+}

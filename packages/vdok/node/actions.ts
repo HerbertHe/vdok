@@ -6,7 +6,7 @@ import execa from "execa"
 
 import { readVdokConfig } from "./config"
 import { generateRoutes } from "./routes"
-import { copyDirectory, debugInfo } from "./utils"
+import { copyDirectory, debugInfo, deleteAllFiles } from "./utils"
 
 import {
     dotVdokDirPath,
@@ -14,9 +14,11 @@ import {
     rawPackageJsonPath,
     rawVdokConfigYamlPath,
     rawVdokConfigYmlPath,
+    rootNodeModulesPath,
     vdokClientFromNodeModulesPath,
     vdokConfigPath,
     vdokDocsPath,
+    vdokNodeModulesPath,
     vdokPackageJsonPath,
     vdokRoutesPath,
 } from "./constants"
@@ -94,15 +96,26 @@ export async function writeRoutesInfos() {
     )
 }
 
-/**
- * 移动文本文件, 考虑性能优化
- */
-export function copyDocs() {
-    copyDirectory(rawDocsPath, vdokDocsPath)
+export function createSymlinkForDocs() {
+    if (process.env.VDOK_DEBUG === "DEBUG") {
+        console.log(debugInfo("Create Symlink for .vdok/docs"))
+    }
+    if (!fs.existsSync(rawDocsPath)) {
+        throw new Error("No docs folder in root path!")
+    }
+
+    if (fs.existsSync(vdokDocsPath)) {
+        deleteAllFiles(vdokDocsPath)
+    }
+
+    fs.symlinkSync(rawDocsPath, vdokDocsPath, "dir")
 }
 
 /**
  * 移动文本文件
+ * @param src
+ * @param dest
+ * @returns
  */
 export function copyMarkdownFile(src: string, dest: string) {
     const before = fs.readFileSync(src, { encoding: "utf-8" })
@@ -148,13 +161,19 @@ export async function installPackage() {
         devDependenciesDownload.push(`${item}@${devDependencies[item]}`)
     }
 
-    // 这里得考虑使用什么包管理工具
-    const deps = dependenciesDownload.join(" ")
-    const devDeps = devDependenciesDownload.join(" ")
-
     if (process.env.VDOK_DEBUG === "DEBUG") {
-        console.log(debugInfo("Vdok Client Dependencies", deps))
-        console.log(debugInfo("Vdok Client Dev Dependencies", devDeps))
+        console.log(
+            debugInfo(
+                "Vdok Client Dependencies",
+                JSON.stringify(dependenciesDownload)
+            )
+        )
+        console.log(
+            debugInfo(
+                "Vdok Client Dev Dependencies",
+                JSON.stringify(devDependenciesDownload)
+            )
+        )
     }
 
     // 根目录执行下载指令
@@ -181,36 +200,85 @@ export async function installPackage() {
             encoding: "utf-8",
         })
 
-        await execa(agent1, [agent1 === "yarn" ? "add" : "install", deps])
-        await execa(agent1, [
-            agent1 === "yarn" ? "add --dev" : "install --dev",
-            devDeps,
+        const task1 = await execa(agent1, [
+            agent1 === "yarn" ? "add" : "install",
+            ...dependenciesDownload,
         ])
+
+        if (process.env.VDOK_DEBUG === "DEBUG") {
+            console.log(
+                debugInfo("Download dependencies task", JSON.stringify(task1))
+            )
+        }
+
+        const task2 = await execa(agent1, [
+            agent1 === "yarn" ? "add --dev" : "install --dev",
+            ...devDependenciesDownload,
+        ])
+
+        if (process.env.VDOK_DEBUG === "DEBUG") {
+            console.log(
+                debugInfo("Download devdependencies task", JSON.stringify(task2))
+            )
+        }
     } else {
         const agent = pkg.agent === "yarn" ? "yarn" : "npm"
-        await execa(agent, [agent === "yarn" ? "add" : "install", deps])
-        await execa(agent, [
+
+        const task1 = await execa(agent, [
             agent === "yarn" ? "add" : "install",
-            devDeps,
+            ...dependenciesDownload,
+        ])
+
+        if (process.env.VDOK_DEBUG === "DEBUG") {
+            console.log(
+                debugInfo("Download dependencies task", JSON.stringify(task1))
+            )
+        }
+
+        const task2 = await execa(agent, [
+            agent === "yarn" ? "add" : "install",
+            ...devDependenciesDownload,
             "--dev",
         ])
+
+        if (process.env.VDOK_DEBUG === "DEBUG") {
+            console.log(
+                debugInfo("Download devdependencies task", JSON.stringify(task2))
+            )
+        }
     }
+}
+
+export function createSymlinkForInnerNodeModules() {
+    if (process.env.VDOK_DEBUG === "DEBUG") {
+        console.log(debugInfo("Create Symlink for .vdok/node_modules"))
+    }
+    if (!fs.existsSync(rootNodeModulesPath)) {
+        throw new Error("No node_modules folder in root path!")
+    }
+
+    if (fs.existsSync(vdokNodeModulesPath)) {
+        deleteAllFiles(vdokNodeModulesPath)
+    }
+
+    fs.symlinkSync(rootNodeModulesPath, vdokNodeModulesPath, "dir")
 }
 
 /**
  * 初始化构建操作
  */
-export function initialBuild() {
+export async function initialBuild() {
     // 生成 .vdok 文件夹
     generateDotVdok()
     // 移动vdok-client
     copyVdokClient()
     // 根目录下载依赖
-    installPackage()
+    await installPackage()
+    // 创建软连接
+    createSymlinkForInnerNodeModules()
     // 移动路由文件
-    writeRoutesInfos()
+    await writeRoutesInfos()
     // 移动配置文件
-    writeVdokConfig()
-    // 移动 docs
-    copyDocs()
+    await writeVdokConfig()
+    createSymlinkForDocs()
 }

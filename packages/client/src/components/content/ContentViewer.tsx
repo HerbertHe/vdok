@@ -16,7 +16,6 @@ import { DivideFeatures } from "../../utils/preprocessor"
 
 function getMarkdownContent(path: string): Promise<string> {
     const isDev: boolean = !!VdokConfig.dev ? true : false
-
     let target: string = ""
     let local: string = "/docs"
     // 获取文档路径
@@ -25,10 +24,9 @@ function getMarkdownContent(path: string): Promise<string> {
 
     if (!isDev) {
         const GitHubRegExp = /^http(s)?:\/\/github.com\//
-        if (GitHubRegExp.test(VdokConfig.base)) {
-            const [user, repo] = VdokConfig.base
-                .replace(GitHubRegExp, "")
-                .split("/")
+        if (GitHubRegExp.test(VdokConfig.base || "")) {
+            const [user, repo] =
+                VdokConfig.base || "".replace(GitHubRegExp, "").split("/")
             // 更新与静态 `/docs` 下
             target = `//cdn.jsdelivr.net/gh/${user}/${repo}@${VdokConfig.branch}/docs${doc}.md`
         } else {
@@ -49,6 +47,9 @@ function getMarkdownContent(path: string): Promise<string> {
     })
 }
 
+/**
+ * TODO: 路由需要处理移除带有 index 的路径
+ */
 const ContentViewer: FC = () => {
     const { data, error, loading } = useRequest(() => {
         return getMarkdownContent(location.pathname)

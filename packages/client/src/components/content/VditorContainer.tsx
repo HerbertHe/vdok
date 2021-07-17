@@ -24,6 +24,7 @@ const VditorContainer: FC<IVditorContainerProps> = ({ markdown }) => {
             {
                 renderers,
                 anchor: 1,
+                mode: "light"
             }
         ).then(() => {
             // 样式注入

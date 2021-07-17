@@ -2,14 +2,12 @@
 
 import { ConvertAnchor } from "./converters"
 
-declare let Lute: any
-
 /**
  * 自定义渲染heading
  * @param node Vditor节点
  * @param entering 进入渲染状态
  */
-function renderHeading(node: any, entering: boolean) {
+function renderHeading(node: any, entering: boolean): [string, number] {
     // BUG 插入锚点, 拿不到自定义锚点的问题
     if (entering) {
         console.log(node.IALAttr())
@@ -27,7 +25,7 @@ function renderHeading(node: any, entering: boolean) {
     }
 }
 
-const renderers = {
+const renderers: ILuteRender = {
     renderHeading,
 }
 

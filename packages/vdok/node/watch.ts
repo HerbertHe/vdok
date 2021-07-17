@@ -1,8 +1,7 @@
 // 定义监听文件更改
-import path from "path"
 import chokidar from "chokidar"
 
-import { cwd } from "./constants"
+import { cwd, rawPackageJsonPath, rootNodeModulesPath } from "./constants"
 
 /**
  * 文件改动监听
@@ -14,20 +13,31 @@ export function runWatch(): chokidar.FSWatcher {
         persistent: true,
     })
 
-    watcher.unwatch(path.join(cwd, "package.json"))
+    watcher.unwatch(rawPackageJsonPath)
+    watcher.unwatch(rootNodeModulesPath)
 
     watcher
         // 监听添加文件事件
-        .on("add", (path, stats) => {})
+        .on("add", (path, stats) => {
+            console.log(path, stats)
+        })
         // 监听文件改动事件
-        .on("change", (path, stats) => {})
+        .on("change", (path, stats) => {
+            console.log(path, stats)
+        })
         // 监听文件删除事件
-        .on("unlink", (path) => {})
+        .on("unlink", (path) => {
+            console.log(path)
+        })
 
     watcher
         // 监听文件夹添加事件
-        .on("addDir", (path, stats) => {})
+        .on("addDir", (path, stats) => {
+            console.log(path, stats)
+        })
         // 监听文件夹删除事件
-        .on("unlinkDir", (path) => {})
+        .on("unlinkDir", (path) => {
+            console.log(path)
+        })
     return watcher
 }
