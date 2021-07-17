@@ -1,11 +1,14 @@
 import fs from "fs"
 
 import { startViteServer } from "./vite"
-import { deleteAllFiles } from "./utils"
+import { debugInfo, deleteAllFiles } from "./utils"
 import { initialBuild } from "./actions"
 import { dotVdokDirPath, rawDocsPath, rawPackageJsonPath } from "./constants"
 
 export async function runDev() {
+    if (process.env.VDOK_DEBUG === "DEBUG") {
+        console.log(debugInfo("Vdok DEBUG Mode Start!"))
+    }
     // 检查仓库是否属于 vdok 项目
     if (fs.existsSync(rawPackageJsonPath)) {
         const { vdok } = JSON.parse(

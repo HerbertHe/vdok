@@ -209,11 +209,34 @@ export function handleEffectiveFiles(): [
         _back.sections = sortSections(_tmp.sections)
 
         if (process.env.VDOK_DEBUG === "DEBUG") {
+            const debugTmp = JSON.parse(
+                JSON.stringify(_back)
+            ) as IEffectiveFilesSectionWithLang
+
+            let afterSections: Array<IEffectiveFilesSection> = []
+
+            if (debugTmp.sections.length !== 0) {
+                afterSections = debugTmp.sections.map((s) => {
+                    const debugFiles: Array<BackFileItemType> = s.files.map(
+                        (f) => [f[0], f[1], `${f[2].substr(0, 30)}...`]
+                    )
+                    return {
+                        title: s.title,
+                        name: s.name,
+                        index: s.index,
+                        files: debugFiles,
+                    }
+                })
+            }
+
+            debugTmp.sections = afterSections
+
             console.log(
                 debugInfo("Handle EffectiveFilesSectionWithLang for normal")
             )
-            console.log(debugExport(JSON.stringify(_back)))
+            console.log(debugExport(JSON.stringify(debugTmp)))
         }
+
         // 返回结果
         return [false, [_back]]
     } else {
@@ -257,10 +280,38 @@ export function handleEffectiveFiles(): [
         }
 
         if (process.env.VDOK_DEBUG === "DEBUG") {
+            const debugTmp = JSON.parse(
+                JSON.stringify(_back)
+            ) as Array<IEffectiveFilesSectionWithLang>
+
+            let debugBack: Array<IEffectiveFilesSectionWithLang> = debugTmp.map(
+                (sW) => {
+                    let afterSections: Array<IEffectiveFilesSection> = []
+                    if (sW.sections.length !== 0) {
+                        afterSections = sW.sections.map((s) => {
+                            const debugFiles: Array<BackFileItemType> =
+                                s.files.map((f) => [
+                                    f[0],
+                                    f[1],
+                                    `${f[2].substr(0, 30)}...`,
+                                ])
+                            return {
+                                title: s.title,
+                                name: s.name,
+                                index: s.index,
+                                files: debugFiles,
+                            }
+                        })
+                    }
+                    sW.sections = afterSections
+                    return sW
+                }
+            )
+
             console.log(
                 debugInfo("Handle EffectiveFilesSectionWithLang for i18n")
             )
-            console.log(debugExport(JSON.stringify(_back)))
+            console.log(debugExport(JSON.stringify(debugBack)))
         }
 
         return [true, _back]

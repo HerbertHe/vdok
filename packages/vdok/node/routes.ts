@@ -3,7 +3,11 @@ import {
     ISideNavItem,
     IRouteItem,
 } from "@herberthe/vdok-types"
-import { handleEffectiveFiles, IEffectiveFilesSection } from "./handle"
+import {
+    BackFileItemType,
+    handleEffectiveFiles,
+    IEffectiveFilesSection,
+} from "./handle"
 import { debugExport, debugInfo } from "./utils"
 
 function generateSideNavSection(
@@ -18,8 +22,20 @@ function generateSideNavSection(
     }
 
     if (process.env.VDOK_DEBUG === "DEBUG") {
+        const debugSection = JSON.parse(
+            JSON.stringify(section)
+        ) as IEffectiveFilesSection
+        let debugFile: Array<BackFileItemType> = []
+        if (debugSection.files.length !== 0) {
+            debugFile = debugSection.files.map((i) => [
+                i[0],
+                i[1],
+                `${i[2].substr(0, 30)}...`,
+            ])
+        }
+        debugSection.files = debugFile
         console.log(debugInfo("Generate Side Nav Section Start"))
-        console.log(debugExport(`${lang}\n${JSON.stringify(section)}`))
+        console.log(debugExport(`${lang}\n${JSON.stringify(debugSection)}`))
     }
 
     // 没有文件的时候直接跳过
