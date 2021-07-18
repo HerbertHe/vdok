@@ -1,2 +1,3 @@
 .vdok
 node_modules
+*.log
