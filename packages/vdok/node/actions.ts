@@ -6,7 +6,13 @@ import execa from "execa"
 
 import { readVdokConfig } from "./config"
 import { generateRoutes } from "./routes"
-import { copyDirectory, debugInfo, deleteAllFiles, exportLabel, exportPass } from "./utils"
+import {
+    copyDirectory,
+    debugInfo,
+    deleteAllFiles,
+    exportLabel,
+    exportPass,
+} from "./utils"
 
 import {
     dotVdokDirPath,
@@ -148,6 +154,40 @@ export function copyVdokClient() {
 }
 
 /**
+ * 清理不必要显示的包信息
+ */
+function cleanPackageJson(dev: Array<string>, dep: Array<string>) {
+    console.log(exportLabel("Clean package.json start~"))
+    let pkg = JSON.parse(
+        fs.readFileSync(rawPackageJsonPath, { encoding: "utf-8" })
+    )
+
+    const reservedDep = [
+        "@herberthe/vdok-client",
+        "@herberthe/vdok-cli",
+        "@herberthe/vdok-types",
+    ]
+    const reservedDev = ["cross-env"]
+
+    for (let item of dev) {
+        if (!reservedDev.includes(item)) {
+            delete pkg.devDependencies[item]
+        }
+    }
+
+    for (let item of dep) {
+        if (!reservedDep.includes(item)) {
+            delete pkg.dependencies[item]
+        }
+    }
+
+    fs.writeFileSync(rawPackageJsonPath, JSON.stringify(pkg), {
+        encoding: "utf-8",
+    })
+    console.log(exportPass("Clean package.json"))
+}
+
+/**
  * 下载 .vdok 下面的 package 的包
  */
 export async function installPackage() {
@@ -275,6 +315,8 @@ export async function installPackage() {
             )
         }
     }
+
+    cleanPackageJson(Object.keys(devDependencies), Object.keys(dependencies))
 }
 
 export function createSymlinkForInnerNodeModules() {
@@ -302,7 +344,14 @@ export async function initialBuild() {
     // 移动vdok-client
     copyVdokClient()
     // 根目录下载依赖
-    await installPackage()
+    if (
+        process.env.VDOK_DEBUG === "DEBUG" &&
+        process.env.VDOK_DEBUG_FAST === "FAST"
+    ) {
+        console.log(debugInfo("Fast rebuild for debug"))
+    } else {
+        await installPackage()
+    }
     // 创建软连接
     createSymlinkForInnerNodeModules()
     // 移动路由文件

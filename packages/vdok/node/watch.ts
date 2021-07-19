@@ -1,8 +1,13 @@
 // 定义监听文件更改
 import chokidar from "chokidar"
-import { writeVdokConfig } from "./actions"
+import { writeRoutesInfos, writeVdokConfig } from "./actions"
 
-import { cwd, rawPackageJsonPath, rootNodeModulesPath } from "./constants"
+import {
+    cwd,
+    rawDocsPath,
+    rawPackageJsonPath,
+    rootNodeModulesPath,
+} from "./constants"
 import {
     exportLabel,
     exportUpdate,
@@ -11,20 +16,20 @@ import {
     watchExportUnlink,
 } from "./utils"
 
-function getFileName(p: string) {
+function getFileName(p: string): [string, Array<string>] {
     const fileNameArray = p.split(/(\\|\/)/)
     const fileName = fileNameArray[fileNameArray.length - 1]
-    return fileName
+    return [fileName, fileNameArray]
 }
 
 /**
  * 文件改动监听
- * TODO: 需要给vite发送更新指令热更新
  */
 export function runWatch(): chokidar.FSWatcher {
     // 定义监听驻守
     const watcher = chokidar.watch(cwd, {
-        ignored: /(^|[\/\\])\../, // 忽略 dot files
+        ignored: /((^|[\/\\])\..|.log|.lock)/, // 忽略 dot files
+        ignoreInitial: true,
         persistent: true,
     })
 
@@ -36,7 +41,7 @@ export function runWatch(): chokidar.FSWatcher {
         // 监听添加文件事件
         .on("add", (path, stats) => {
             console.log(watchExportAdd(path))
-            const fileName = getFileName(path)
+            const [fileName, fileNameArray] = getFileName(path)
             const vdokConfigRegExp = /vdok.config.y(a)?ml/
             // 修改文件为配置文件, 触发配置写入
             if (vdokConfigRegExp.test(fileName)) {
@@ -46,12 +51,19 @@ export function runWatch(): chokidar.FSWatcher {
                 })()
             }
 
-            // TODO 新增 docs 文件触发路由更新, 第一次除外
+            // 只有第一次生效
+            // TODO 性能可以继续优化
+            if (/.md$/.test(path) && fileNameArray.includes("docs")) {
+                ;(async () => {
+                    await writeRoutesInfos()
+                    console.log(exportUpdate("Vdok Routes"))
+                })()
+            }
         })
         // 监听文件改动事件
         .on("change", (path, stats) => {
             console.log(watchExportChange(path))
-            const fileName = getFileName(path)
+            const [fileName, fileNameArray] = getFileName(path)
             const vdokConfigRegExp = /vdok.config.y(a)?ml/
             // 修改文件为配置文件, 触发配置写入
             if (vdokConfigRegExp.test(fileName)) {
@@ -60,10 +72,25 @@ export function runWatch(): chokidar.FSWatcher {
                     console.log(exportUpdate("Vdok Config"))
                 })()
             }
+
+            // TODO 性能可以优化
+            if (/.md$/.test(path) && fileNameArray.includes("docs")) {
+                ;(async () => {
+                    await writeRoutesInfos()
+                    console.log(exportUpdate("Vdok Routes"))
+                })()
+            }
         })
         // 监听文件删除事件
         .on("unlink", (path) => {
             console.log(watchExportUnlink(path))
+            const [, fileNameArray] = getFileName(path)
+            if (/.md$/.test(path) && fileNameArray.includes("docs")) {
+                ;(async () => {
+                    await writeRoutesInfos()
+                    console.log(exportUpdate("Vdok Routes"))
+                })()
+            }
         })
 
     watcher
@@ -74,7 +101,9 @@ export function runWatch(): chokidar.FSWatcher {
         // 监听文件夹删除事件
         .on("unlinkDir", (path) => {
             console.log(watchExportUnlink(path, "dir"))
-            // TODO 删除根目录 docs 文件夹直接报错
+            if (path === rawDocsPath) {
+                throw new Error("Delete necessary folder /docs!")
+            }
         })
     return watcher
 }

@@ -11,6 +11,26 @@ export function SwitchTheme() {
 }
 
 /**
+ * Auto dark mode
+ * TODO: fix bugs
+ */
+// export function AutoDarkMode() {
+//     const html = document.getElementsByTagName("html")[0]
+//     if (window.matchMedia("(prefers-color-scheme: dark)")) {
+//         html.classList.add("dark")
+//     } else {
+//         html.classList.remove("dark")
+//     }
+// }
+
+/**
+ * 判断是否为夜间模式
+ */
+export const isDarkMode = document
+    .getElementsByTagName("html")[0]
+    .classList.contains("dark")
+
+/**
  * 锚点定位
  * @param anchor 锚点
  */

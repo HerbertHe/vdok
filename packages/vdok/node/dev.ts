@@ -3,7 +3,13 @@ import fs from "fs"
 import { startViteServer } from "./vite"
 import { debugInfo, deleteAllFiles, exportLabel, exportPass } from "./utils"
 import { initialBuild } from "./actions"
-import { dotVdokDirPath, rawDocsPath, rawPackageJsonPath } from "./constants"
+import {
+    dotVdokDirPath,
+    rawDocsPath,
+    rawPackageJsonPath,
+    vdokDocsPath,
+    vdokNodeModulesPath,
+} from "./constants"
 import { runWatch } from "./watch"
 
 export async function runDev() {
@@ -35,13 +41,20 @@ export async function runDev() {
     }
     console.log(exportPass("Check for Vdok Docs"))
 
-    // 检查 .vdok 目录, 不管有没有都初始化
-    if (fs.existsSync(dotVdokDirPath)) {
-        deleteAllFiles(dotVdokDirPath)
-    }
+    // 检查到软连接, 则视为二次构建
+    if (
+        !fs.existsSync(vdokNodeModulesPath) ||
+        !fs.existsSync(vdokDocsPath) ||
+        process.env.VDOK_DEBUG === "DEBUG"
+    ) {
+        // 检查 .vdok 目录, 不管有没有都初始化
+        if (fs.existsSync(dotVdokDirPath)) {
+            deleteAllFiles(dotVdokDirPath)
+        }
 
-    console.log(exportLabel("Initial Build Start~"))
-    await initialBuild()
+        console.log(exportLabel("Initial Build Start~"))
+        await initialBuild()
+    }
 
     // 启动 vite 服务
     console.log(exportLabel("Start Vite Server~"))
@@ -49,4 +62,5 @@ export async function runDev() {
 
     // 监听文件修改
     runWatch()
+    console.log("Press Ctrl/Command + C to quit")
 }

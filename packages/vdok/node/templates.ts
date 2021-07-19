@@ -22,8 +22,10 @@ const route =
     routes.length === 1
         ? routes[0]
         : !!lang
-        ? routes.filter((item) => item.lang === lang)
+        ? routes.filter((item) => item.lang === lang)[0]
         : routes[0]
+
+;(<any>window).__Vdok_i18n__ = !!route.lang
 
 export { routes, route }
 `

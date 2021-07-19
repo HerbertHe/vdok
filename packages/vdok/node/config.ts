@@ -15,7 +15,7 @@ import { cwd, vdokYamlConfigRegExp } from "./constants"
 function mergeVdokConfig(custom: IVdokConfig, def: IVdokConfig): string {
     let _back: IVdokConfig = {}
     for (let item in def) {
-        if (!custom[item]) {
+        if (!!custom[item]) {
             _back[item] = custom[item]
         } else {
             _back[item] = def[item]

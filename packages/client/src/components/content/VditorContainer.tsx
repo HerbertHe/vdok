@@ -18,34 +18,39 @@ const VditorContainer: FC<IVditorContainerProps> = ({ markdown }) => {
     const vditorContainerRef = createRef<HTMLDivElement>()
     useEffect(() => {
         // TODO 处理Vditor奇异锚点渲染的问题
-        Vditor.preview(
-            vditorContainerRef.current as HTMLDivElement,
-            !!markdown ? markdown : "",
-            {
-                renderers,
-                anchor: 1,
-                mode: "light"
-            }
-        ).then(() => {
-            // 样式注入
-            vditorContainerRef.current?.classList.add("vdok-vditor-container")
+        !!markdown &&
+            (() => {
+                Vditor.preview(
+                    vditorContainerRef.current as HTMLDivElement,
+                    !!markdown ? markdown : "",
+                    {
+                        renderers,
+                        anchor: 1,
+                        mode: "light",
+                    }
+                ).then(() => {
+                    // 样式注入
+                    vditorContainerRef.current?.classList.add(
+                        "vdok-vditor-container"
+                    )
 
-            // 锚点定位
-            const hash = `#${decodeURIComponent(
-                location.hash.substring(1, location.hash.length)
-            )}`
+                    // 锚点定位
+                    const hash = `#${decodeURIComponent(
+                        location.hash.substring(1, location.hash.length)
+                    )}`
 
-            if (!!hash) {
-                const target = document.querySelector(
-                    hash
-                ) as HTMLHeadingElement
-                if (!!target) {
-                    scrollTo({
-                        top: target.offsetTop - 80,
-                    })
-                }
-            }
-        })
+                    if (hash.length !== 1) {
+                        const target = document.querySelector(
+                            hash
+                        ) as HTMLHeadingElement
+                        if (!!target) {
+                            scrollTo({
+                                top: target.offsetTop - 80,
+                            })
+                        }
+                    }
+                })
+            })()
     }, [])
 
     return !!markdown ? (

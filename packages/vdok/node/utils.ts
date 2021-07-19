@@ -25,8 +25,10 @@ export function deleteAllFiles(p: string) {
         const files = fs.readdirSync(p)
         files.forEach((f) => {
             const tP = path.join(p, f)
-            const isDir = fs.lstatSync(tP).isDirectory()
-            if (isDir) {
+            const stat = fs.lstatSync(tP)
+            const isDir = stat.isDirectory()
+            const isLink = stat.isSymbolicLink()
+            if (isDir && !isLink) {
                 deleteAllFiles(tP)
             } else {
                 fs.unlinkSync(tP)
@@ -137,5 +139,5 @@ export function exportMode(mode: "i18n" | "normal" = "normal"): string {
 }
 
 export function exportUpdate(content: string): string {
-    return `${bgBlue(" UPDATE ")}  ${blue(content)}`
+    return `${bgMagenta(" UPDATE ")}  ${blue(content)}`
 }

@@ -1,6 +1,7 @@
 // Vditor自定义render
-
 import { ConvertAnchor } from "./converters"
+
+declare let Lute: any
 
 /**
  * 自定义渲染heading
@@ -10,7 +11,6 @@ import { ConvertAnchor } from "./converters"
 function renderHeading(node: any, entering: boolean): [string, number] {
     // BUG 插入锚点, 拿不到自定义锚点的问题
     if (entering) {
-        console.log(node.IALAttr())
         return [
             `<h${node.__internal_object__.HeadingLevel} id=${ConvertAnchor(
                 node.Text()
@@ -25,7 +25,7 @@ function renderHeading(node: any, entering: boolean): [string, number] {
     }
 }
 
-const renderers: ILuteRender = {
+const renderers = {
     renderHeading,
 }
 

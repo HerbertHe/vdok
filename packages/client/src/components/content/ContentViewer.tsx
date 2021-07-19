@@ -1,5 +1,6 @@
-import React, { FC } from "react"
+import React, { FC, useEffect, useState } from "react"
 import { useRequest } from "ahooks"
+import { withRouter, useLocation } from "react-router-dom"
 
 import SideOutlineNavs from "./SideOutlineNavs"
 import VditorContainer from "./VditorContainer"
@@ -48,11 +49,14 @@ function getMarkdownContent(path: string): Promise<string> {
 }
 
 /**
- * TODO: 路由需要处理移除带有 index 的路径
+ * TODO: 路由需要处理移除带有 _index 的路径
+ * TODO: 修复随路径订阅获取数据
  */
 const ContentViewer: FC = () => {
+    const { pathname } = useLocation()
+
     const { data, error, loading } = useRequest(() => {
-        return getMarkdownContent(location.pathname)
+        return getMarkdownContent(pathname)
     })
 
     return error ? (
@@ -95,4 +99,4 @@ const ContentViewer: FC = () => {
     )
 }
 
-export default ContentViewer
+export default withRouter(ContentViewer)
