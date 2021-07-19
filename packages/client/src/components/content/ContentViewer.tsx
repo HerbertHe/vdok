@@ -1,19 +1,20 @@
-import React, { FC, useEffect, useState } from "react"
+import React, { FC, useEffect } from "react"
 import { useRequest } from "ahooks"
 import { withRouter, useLocation } from "react-router-dom"
 
 import SideOutlineNavs from "./SideOutlineNavs"
 import VditorContainer from "./VditorContainer"
-
-import VdokConfig from "../../../vdok.config"
 import Footer from "../layouts/Footer"
-import NoContentFound from "../errors/NoContentFound"
 import Loading from "../errors/Loading"
+import NoContentFound from "../errors/NoContentFound"
 import GetContentError from "../errors/GetContentError"
 import ContentOutline from "./ContentOutline"
-import { GenerateContentOutline } from "../../utils/outline"
 import ContentHeader from "./ContentHeader"
 import { DivideFeatures } from "../../utils/preprocessor"
+import { GenerateContentOutline } from "../../utils/outline"
+import PrevNext from "../extra/PrevNext"
+
+import VdokConfig from "../../../vdok.config"
 
 function getMarkdownContent(path: string): Promise<string> {
     const isDev: boolean = !!VdokConfig.dev ? true : false
@@ -55,14 +56,17 @@ function getMarkdownContent(path: string): Promise<string> {
 const ContentViewer: FC = () => {
     const { pathname } = useLocation()
 
-    const { data, error, loading } = useRequest(() => {
-        return getMarkdownContent(pathname)
+    const { data, error, loading, run } = useRequest(getMarkdownContent, {
+        manual: true,
     })
+
+    // 改为钩子触发
+    useEffect(() => {
+        run(pathname)
+    }, [pathname])
 
     return error ? (
         <GetContentError />
-    ) : loading ? (
-        <Loading />
     ) : (
         <div className="w-full">
             <div className="w-260px h-screen fixed left-0 top-0 bg-white z-100">
@@ -72,10 +76,12 @@ const ContentViewer: FC = () => {
                 <ContentHeader />
             </div>
             <div className="w-auto ml-260px mr-150px px-45px mt-70px">
+                {/* {loading && <Loading />} */}
                 {!!data && (
                     <VditorContainer markdown={DivideFeatures(data)[1]} />
                 )}
                 {!data && <NoContentFound />}
+                <PrevNext />
                 <Footer />
             </div>
             <div

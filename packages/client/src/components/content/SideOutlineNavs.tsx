@@ -14,18 +14,15 @@ const SideOutlineNavs = () => (
         {/* 展示logo */}
         <h1 className="w-full text-center text-bold text-red-500">Vdok</h1>
         {/* 展示文档名 */}
-        <ul className="h-auto overflow-auto mt-20px w-full px-5">
+        <ul className="h-auto overflow-auto mt-20px w-full px-5 scrollbar-thin scrollbar-thumb-light-900 scrollbar-track-light-500 dark:(scrollbar-track-transparent scrollbar-thumb-dark-100)">
             {route.sections.map((item: ISideNavSection) => (
                 <Fragment key={item.section}>
-                    {!!item.section && <SideSection section={item.section} />}
+                    {!!item.section && <SideSection section={item} />}
 
                     {item.navs.map((j: ISideNavItem) => (
                         <SideNavItem
                             key={j.url}
-                            url={
-                                (!!route.lang ? `/${route.lang}` : "") +
-                                    j.url || ""
-                            }
+                            url={j.url || ""}
                             title={j.title}
                         />
                     ))}

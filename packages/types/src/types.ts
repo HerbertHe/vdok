@@ -6,6 +6,7 @@ export interface ISideNavItem {
 export interface ISideNavSection extends ISideNavItem {
     section: string
     index: string
+    title: string
     navs: Array<ISideNavItem>
 }
 

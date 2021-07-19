@@ -45,14 +45,14 @@ function generateSideNavSection(
 
     sideNavSectionTmp.index = section.index.exist
         ? `${!!lang ? `/${lang}` : ""}/${section.name}/_index`
-        : section.files[0][0]
+        : `${!!lang ? `/${lang}` : ""}/${section.name}/${section.files[0][0]}`
     sideNavSectionTmp.title = section.title
     sideNavSectionTmp.section = section.name
     sideNavSectionTmp.navs = section.files.map(
         ([name, features]) =>
             ({
                 title: `${!!features.title ? features.title : name}`,
-                url: `/${section.name}/${name}`,
+                url: `${!!lang ? `/${lang}` : ""}/${section.name}/${name}`,
             } as ISideNavItem)
     )
 
