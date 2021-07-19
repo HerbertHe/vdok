@@ -3,7 +3,13 @@ import path from "path"
 
 import { isI18nMode, isIncludedInBCP47 } from "./is"
 import { cwd } from "./constants"
-import { debugExport, debugInfo } from "./utils"
+import {
+    debugExport,
+    debugInfo,
+    exportLabel,
+    exportMode,
+    exportPass,
+} from "./utils"
 
 export interface IDetectEffectiveSection {
     section: string
@@ -112,8 +118,9 @@ export function detectEffectiveFiles(): Array<IDetectEffectiveFiles> {
 
     let _back: Array<IDetectEffectiveFiles> = []
 
-    // 判断是否处于i18n模式, 返回数据结构不同
+    console.log(exportLabel("Detect Effective Files start~"))
     if (isI18nMode(cwd)) {
+        console.log(exportMode("i18n"))
         if (process.env.VDOK_DEBUG === "DEBUG") {
             console.log(debugInfo("Detect Mode", "i18n"))
         }
@@ -157,6 +164,7 @@ export function detectEffectiveFiles(): Array<IDetectEffectiveFiles> {
             _back.push(_fTmp)
         }
     } else {
+        console.log(exportMode("normal"))
         if (process.env.VDOK_DEBUG === "DEBUG") {
             console.log(debugInfo("Detect Mode", "normal"))
         }
@@ -185,6 +193,7 @@ export function detectEffectiveFiles(): Array<IDetectEffectiveFiles> {
 
         _back.push(_f)
     }
+    console.log(exportPass("Detect Effective Files"))
 
     if (process.env.VDOK_DEBUG === "DEBUG") {
         console.log(debugInfo("Detected:"))

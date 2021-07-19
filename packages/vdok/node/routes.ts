@@ -8,7 +8,7 @@ import {
     handleEffectiveFiles,
     IEffectiveFilesSection,
 } from "./handle"
-import { debugExport, debugInfo } from "./utils"
+import { debugExport, debugInfo, exportLabel, exportPass } from "./utils"
 
 function generateSideNavSection(
     lang: string,
@@ -60,6 +60,7 @@ function generateSideNavSection(
 }
 
 export function generateRoutes(): Array<IRouteItem> {
+    console.log(exportLabel("Generate Routes start~"))
     const [mode, tree] = handleEffectiveFiles()
     if (mode) {
         let _back: Array<IRouteItem> = []
@@ -87,6 +88,7 @@ export function generateRoutes(): Array<IRouteItem> {
             console.log(debugExport(JSON.stringify(_back)))
         }
 
+        console.log(exportPass("Generate Routes"))
         return _back
     } else {
         // 非 i18n 路由生成
@@ -113,6 +115,7 @@ export function generateRoutes(): Array<IRouteItem> {
             console.log(debugExport(JSON.stringify(_back)))
         }
 
+        console.log(exportPass("Generate Routes"))
         return _back
     }
 }

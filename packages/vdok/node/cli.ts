@@ -7,14 +7,15 @@ const cli = new Command()
 
 cli.name("vdok").version(version)
 
+// TODO 新增 preview 命令优化跳过依赖重新下载流程
 cli.command("dev")
-    .description("启动开发")
+    .description("Start development")
     .action(() => {
         runDev()
     })
 
 cli.command("build")
-    .description("构建产物")
+    .description("Build product")
     .action(() => {
         console.log("产物输出")
     })

@@ -6,7 +6,7 @@ import execa from "execa"
 
 import { readVdokConfig } from "./config"
 import { generateRoutes } from "./routes"
-import { copyDirectory, debugInfo, deleteAllFiles } from "./utils"
+import { copyDirectory, debugInfo, deleteAllFiles, exportLabel, exportPass } from "./utils"
 
 import {
     dotVdokDirPath,
@@ -20,6 +20,7 @@ import {
     vdokDocsPath,
     vdokNodeModulesPath,
     vdokPackageJsonPath,
+    vdokPublicPath,
     vdokRoutesPath,
 } from "./constants"
 
@@ -32,6 +33,7 @@ function generateDotVdok() {
     if (!fs.existsSync(dotVdokDirPath)) {
         // 生成文件夹
         fs.mkdirSync(dotVdokDirPath, { recursive: true })
+        console.log(exportPass("Generate .vdok"))
     }
     return
 }
@@ -53,6 +55,7 @@ export async function writeVdokConfig() {
     }
 
     fs.writeFileSync(vdokConfigPath, writeContent)
+    console.log(exportPass("Write Vdok Config"))
 }
 
 export async function writeRoutesInfos() {
@@ -94,6 +97,7 @@ export async function writeRoutesInfos() {
             encoding: "utf-8",
         }
     )
+    console.log(exportPass("Write Routes Infos"))
 }
 
 export function createSymlinkForDocs() {
@@ -108,7 +112,12 @@ export function createSymlinkForDocs() {
         deleteAllFiles(vdokDocsPath)
     }
 
+    if (!fs.existsSync(vdokPublicPath)) {
+        fs.mkdirSync(vdokPublicPath, { recursive: true })
+    }
+
     fs.symlinkSync(rawDocsPath, vdokDocsPath, "dir")
+    console.log(exportPass("Create symlink for docs"))
 }
 
 /**
@@ -117,28 +126,32 @@ export function createSymlinkForDocs() {
  * @param dest
  * @returns
  */
-export function copyMarkdownFile(src: string, dest: string) {
-    const before = fs.readFileSync(src, { encoding: "utf-8" })
-    const after = fs.readFileSync(src, { encoding: "utf-8" })
+// export function copyMarkdownFile(src: string, dest: string) {
+//     const before = fs.readFileSync(src, { encoding: "utf-8" })
+//     const after = fs.readFileSync(src, { encoding: "utf-8" })
 
-    if (md5(before) === md5(after)) {
-        return
-    }
+//     if (md5(before) === md5(after)) {
+//         return
+//     }
 
-    fs.copyFileSync(src, dest)
-}
+//     fs.copyFileSync(src, dest)
+//     console.log(exportPass(""))
+// }
 
 /**
  * 移动 vdok client文件
  */
 export function copyVdokClient() {
+    console.log(exportLabel("Copy Vdok Client Start~"))
     copyDirectory(vdokClientFromNodeModulesPath, dotVdokDirPath)
+    console.log(exportPass("Copy Vdok Client"))
 }
 
 /**
  * 下载 .vdok 下面的 package 的包
  */
 export async function installPackage() {
+    console.log(exportLabel("Install Packages for Client start~"))
     const { dependencies, devDependencies } =
         JSON.parse(
             fs.readFileSync(vdokPackageJsonPath, {
@@ -147,6 +160,7 @@ export async function installPackage() {
         ) || {}
 
     if (!dependencies && !devDependencies) {
+        console.log(exportPass("Install Packages for Client"))
         return
     }
 
@@ -200,10 +214,12 @@ export async function installPackage() {
             encoding: "utf-8",
         })
 
+        console.log(exportLabel("Install dependencies start~"))
         const task1 = await execa(agent1, [
             agent1 === "yarn" ? "add" : "install",
             ...dependenciesDownload,
         ])
+        console.log(exportPass("Install dependencies"))
 
         if (process.env.VDOK_DEBUG === "DEBUG") {
             console.log(
@@ -211,23 +227,30 @@ export async function installPackage() {
             )
         }
 
+        console.log(exportLabel("Install devdependencies start~"))
         const task2 = await execa(agent1, [
             agent1 === "yarn" ? "add --dev" : "install --dev",
             ...devDependenciesDownload,
         ])
+        console.log(exportPass("Install devdependencies"))
 
         if (process.env.VDOK_DEBUG === "DEBUG") {
             console.log(
-                debugInfo("Download devdependencies task", JSON.stringify(task2))
+                debugInfo(
+                    "Download devdependencies task",
+                    JSON.stringify(task2)
+                )
             )
         }
     } else {
         const agent = pkg.agent === "yarn" ? "yarn" : "npm"
 
+        console.log(exportLabel("Install dependencies start~"))
         const task1 = await execa(agent, [
             agent === "yarn" ? "add" : "install",
             ...dependenciesDownload,
         ])
+        console.log(exportPass("Install dependencies"))
 
         if (process.env.VDOK_DEBUG === "DEBUG") {
             console.log(
@@ -235,15 +258,20 @@ export async function installPackage() {
             )
         }
 
+        console.log(exportLabel("Install devdependencies start~"))
         const task2 = await execa(agent, [
             agent === "yarn" ? "add" : "install",
             ...devDependenciesDownload,
             "--dev",
         ])
+        console.log(exportPass("Install devdependencies"))
 
         if (process.env.VDOK_DEBUG === "DEBUG") {
             console.log(
-                debugInfo("Download devdependencies task", JSON.stringify(task2))
+                debugInfo(
+                    "Download devdependencies task",
+                    JSON.stringify(task2)
+                )
             )
         }
     }
@@ -251,7 +279,7 @@ export async function installPackage() {
 
 export function createSymlinkForInnerNodeModules() {
     if (process.env.VDOK_DEBUG === "DEBUG") {
-        console.log(debugInfo("Create Symlink for .vdok/node_modules"))
+        console.log(debugInfo("Create symlink for .vdok/node_modules"))
     }
     if (!fs.existsSync(rootNodeModulesPath)) {
         throw new Error("No node_modules folder in root path!")
@@ -262,6 +290,7 @@ export function createSymlinkForInnerNodeModules() {
     }
 
     fs.symlinkSync(rootNodeModulesPath, vdokNodeModulesPath, "dir")
+    console.log(exportPass("Create symlink for .vdok/node_modules"))
 }
 
 /**

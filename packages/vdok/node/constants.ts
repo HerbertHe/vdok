@@ -26,6 +26,7 @@ export const vdokClientFromNodeModulesPath = path.join(
  */
 export const vdokConfigPath = path.join(dotVdokDirPath, "vdok.config.ts")
 export const vdokRoutesPath = path.join(dotVdokDirPath, "src", "routes.ts")
+export const vdokPublicPath = path.join(dotVdokDirPath, "public")
 export const vdokDocsPath = path.join(dotVdokDirPath, "public", "docs")
 export const vdokPackageJsonPath = path.join(dotVdokDirPath, "package.json")
 export const vdokViteConfigPath = path.join(dotVdokDirPath, "vite.config.ts")

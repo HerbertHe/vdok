@@ -20,13 +20,17 @@ export default {
     plugins: [
         json(),
         // Allows node_modules resolution
-        nodeResolve({ extensions }),
+        nodeResolve({ extensions, preferBuiltins: true }),
 
         // Allow bundling cjs modules. Rollup doesn't understand cjs
         commonjs(),
 
         // Compile TypeScript/JavaScript files
         babel({ extensions, babelHelpers: "runtime", include: ["node/**/*"] }),
+
+        /**
+         * 针对 fsevents-handler.js 的问题, 现阶段直接修改依赖的源码
+         */
     ],
 
     output: {

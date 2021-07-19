@@ -6,7 +6,7 @@ import {
     IDetectEffectiveFiles,
     IDetectEffectiveSection,
 } from "./detect"
-import { debugExport, debugInfo } from "./utils"
+import { debugExport, debugInfo, exportLabel, exportPass } from "./utils"
 
 export interface IEffectiveFilesSectionIndex {
     exist: boolean
@@ -185,6 +185,7 @@ export function handleEffectiveFiles(): [
         throw new Error("No files in the /docs folder")
     }
 
+    console.log(exportLabel("Handle Effective Files start~"))
     // 处理非 i18n 的情况
     if (_fs.length === 1 && !_fs[0].lang) {
         let _tmp: IEffectiveFilesSectionWithLang = {
@@ -238,6 +239,7 @@ export function handleEffectiveFiles(): [
         }
 
         // 返回结果
+        console.log(exportPass("Handle Effective Files"))
         return [false, [_back]]
     } else {
         // 处理 i18n 模式
@@ -314,6 +316,7 @@ export function handleEffectiveFiles(): [
             console.log(debugExport(JSON.stringify(debugBack)))
         }
 
+        console.log(exportPass("Handle Effective Files"))
         return [true, _back]
     }
 }
