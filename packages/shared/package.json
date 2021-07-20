@@ -9,8 +9,7 @@
   "files": [
     "dist",
     "README.md",
-    "package.json",
-    "index.d.ts"
+    "package.json"
   ],
   "publishConfig": {
     "registry": "https://registry.npm.org/",
