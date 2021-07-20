@@ -26,5 +26,6 @@
   },
   "devDependencies": {
     "tsup": "^4.12.5"
-  }
+  },
+  "gitHead": "27f3c769e53485263a1a32ee50cd766f0ce15c7e"
 }
