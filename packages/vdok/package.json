@@ -33,6 +33,7 @@
     "url": "https://github.com/HerbertHe/vdok/issues"
   },
   "dependencies": {
+    "@herberthe/vdok-shared": "^0.0.6",
     "@herberthe/vdok-types": "^0.0.6",
     "chalk": "^4.1.1",
     "chokidar": "^3.5.2",

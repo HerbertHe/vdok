@@ -19,6 +19,7 @@ const PrevNextItem: FC<IPrevNextItem> = ({ title, url, type }) => (
     </div>
 )
 
+// TODO 组件需要依赖 section
 const PrevNext: FC<IPrevNextProps> = ({ prev, next }) => (
     <div className="w-full flex flex-row justify-between">
         <PrevNextItem

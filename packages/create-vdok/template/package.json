@@ -7,9 +7,9 @@
         "debug": "cross-env VDOK_DEBUG=DEBUG vdok dev"
     },
     "dependencies": {
-        "@herberthe/vdok-client": "^0.0.1",
-        "@herberthe/vdok-types": "^0.0.1",
-        "@herberthe/vdok-cli": "^0.0.1"
+        "@herberthe/vdok-client": "^0.0.7",
+        "@herberthe/vdok-types": "^0.0.7",
+        "@herberthe/vdok-cli": "^0.0.7"
     },
     "devDependencies": {
         "cross-env": "^7.0.3"

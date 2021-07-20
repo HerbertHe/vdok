@@ -17,4 +17,8 @@ export default defineConfig({
     },
     darkMode: "class",
     plugins: [PluginScrollBar],
+    shortcuts: {
+        "vdok-scrollbar":
+            "scrollbar-thin scrollbar-thumb-light-900 scrollbar-track-light-500 dark:(scrollbar-track-transparent scrollbar-thumb-dark-100)",
+    },
 })

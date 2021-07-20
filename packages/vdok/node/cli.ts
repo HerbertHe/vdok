@@ -1,5 +1,6 @@
 import { Command } from "commander"
 import { version } from "../package.json"
+import { runBuild } from "./build"
 import { runDev } from "./dev"
 
 // 初始化命令行
@@ -16,7 +17,7 @@ cli.command("dev")
 cli.command("build")
     .description("Build product")
     .action(() => {
-        console.log("产物输出")
+        runBuild()
     })
 
 cli.parse(process.argv)

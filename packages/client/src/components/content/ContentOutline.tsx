@@ -65,7 +65,7 @@ const ContentOutline: FC<IContentOutlineProps> = ({ outlines }) => {
     }
 
     return (
-        <ul className="w-full text-xs h-full overflow-auto pb-5 scrollbar-thin scrollbar-thumb-light-900 scrollbar-track-light-500 dark:(scrollbar-track-transparent scrollbar-thumb-dark-100)">
+        <ul className="w-full text-xs h-full overflow-auto pb-5 scrollbar-thin vdok-scrollbar">
             {outlines.map((item: IContentOutlineItem) => (
                 <li key={item.heading} className="my-1">
                     <a

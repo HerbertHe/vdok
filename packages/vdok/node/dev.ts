@@ -2,7 +2,7 @@ import fs from "fs"
 
 import { startViteServer } from "./vite"
 import { debugInfo, deleteAllFiles, exportLabel, exportPass } from "./utils"
-import { initialBuild } from "./actions"
+import { copyVdokClient, createSymlinkForDocs, createSymlinkForInnerNodeModules, generateDotVdok, installPackage, writeRoutesInfos, writeVdokConfig } from "./actions"
 import {
     dotVdokDirPath,
     rawDocsPath,
@@ -11,6 +11,32 @@ import {
     vdokNodeModulesPath,
 } from "./constants"
 import { runWatch } from "./watch"
+
+/**
+ * 开发构建任务
+ */
+async function devTask() {
+    // 生成 .vdok 文件夹
+    generateDotVdok()
+    // 移动vdok-client
+    copyVdokClient()
+    // 根目录下载依赖
+    if (
+        process.env.VDOK_DEBUG === "DEBUG" &&
+        process.env.VDOK_DEBUG_FAST === "FAST"
+    ) {
+        console.log(debugInfo("Fast rebuild for debug"))
+    } else {
+        await installPackage()
+    }
+    // 创建软连接
+    createSymlinkForInnerNodeModules()
+    // 移动路由文件
+    await writeRoutesInfos()
+    // 移动配置文件
+    await writeVdokConfig()
+    createSymlinkForDocs()
+}
 
 export async function runDev() {
     process.env.NODE_ENV = JSON.stringify("development")
@@ -53,7 +79,7 @@ export async function runDev() {
         }
 
         console.log(exportLabel("Initial Build Start~"))
-        await initialBuild()
+        await devTask()
     }
 
     // 启动 vite 服务

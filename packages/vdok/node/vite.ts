@@ -2,8 +2,6 @@
 import fs from "fs"
 
 const { createServer, build } = require("vite")
-
-import { deleteAllFiles } from "./utils"
 import { distPath, dotVdokDirPath, vdokViteConfigPath } from "./constants"
 
 /**
@@ -28,14 +26,12 @@ export async function startViteServer() {
 }
 
 /**
- * Vite 构建
+ * TODO: Vite 构建
  */
 export async function buildByVite() {
     if (!fs.existsSync(dotVdokDirPath)) {
         throw new Error("Folder .vdok Not Found!")
     }
-
-    deleteAllFiles(dotVdokDirPath)
 
     await build({
         root: dotVdokDirPath,

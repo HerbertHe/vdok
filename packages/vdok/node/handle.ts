@@ -1,6 +1,6 @@
 import fs from "fs"
+import { analyzerArticle, IArticleFeatures } from "@herberthe/vdok-shared"
 
-import { analyzerArticle, IArticleFeatures } from "./analyzers"
 import {
     detectEffectiveFiles,
     IDetectEffectiveFiles,

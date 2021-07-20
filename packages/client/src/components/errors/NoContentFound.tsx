@@ -5,7 +5,7 @@ const NoContentFound: FC = () => (
     <div className="w-full flex flex-col justify-start items-center py-20">
         <Error theme="outline" size="80" fill="#d43e2a" />
         <div className="mt-6 font-bold text-3xl text-color-[#d43e2a]">
-            没找到内容文件!
+            文件中无内容!
         </div>
         <div className="text-gray-400">No Content Found!</div>
         <div className="mt-4 text-xl dark:text-light-900">

@@ -8,6 +8,5 @@ Vdok is a markdown document tool for generating document based on Vite, React an
 
 ## TODOs
 
-- Add File Watching
-- Fix `fsevents` issue
+- Custom plugin
 - Add Config Option `languages` and checker for better i18n auto switch

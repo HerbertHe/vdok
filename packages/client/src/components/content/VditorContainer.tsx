@@ -1,9 +1,8 @@
 import React, { createRef, FC, useEffect } from "react"
 import Vditor from "vditor"
+import { renderers } from "@herberthe/vdok-shared"
 
 import "../../styles/vdok-vditor-container.less"
-import { renderers } from "../../utils/renderers"
-
 import NoContentFound from "../errors/NoContentFound"
 
 export interface IVditorContainerProps {
@@ -17,7 +16,6 @@ export interface IVditorContainerProps {
 const VditorContainer: FC<IVditorContainerProps> = ({ markdown }) => {
     const vditorContainerRef = createRef<HTMLDivElement>()
     useEffect(() => {
-        // TODO 处理Vditor奇异锚点渲染的问题
         if (!!markdown) {
             Vditor.preview(
                 vditorContainerRef.current as HTMLDivElement,

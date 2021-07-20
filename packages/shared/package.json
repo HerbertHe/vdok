@@ -1,0 +1,35 @@
+{
+  "name": "@herberthe/vdok-shared",
+  "version": "0.0.6",
+  "description": "Shared package for Vdok",
+  "author": "Herbert <herbert.he0229@gmail.com>",
+  "homepage": "https://github.com/HerbertHe/vdok#readme",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "files": [
+    "dist",
+    "README.md",
+    "package.json",
+    "index.d.ts"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npm.org/",
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HerbertHe/vdok.git"
+  },
+  "scripts": {
+    "raw:dev": "tsup --watch",
+    "raw:build": "tsup",
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/HerbertHe/vdok/issues"
+  },
+  "dependencies": {
+    "normalize-diacritics": "^2.14.0",
+    "yaml": "^1.10.2"
+  }
+}

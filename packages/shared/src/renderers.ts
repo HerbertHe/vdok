@@ -1,5 +1,9 @@
-// Vditor自定义render
+import type { ILuteNode } from "./vditor-types"
 import { ConvertAnchor } from "./converters"
+
+interface INode extends ILuteNode {
+    Text: () => string
+}
 
 declare let Lute: any
 
@@ -8,7 +12,7 @@ declare let Lute: any
  * @param node Vditor节点
  * @param entering 进入渲染状态
  */
-function renderHeading(node: any, entering: boolean): [string, number] {
+function renderHeading(node: INode, entering: boolean): [string, number] {
     // BUG 插入锚点, 拿不到自定义锚点的问题
     if (entering) {
         return [
@@ -24,6 +28,8 @@ function renderHeading(node: any, entering: boolean): [string, number] {
         ]
     }
 }
+
+// TODO 自定义渲染代码块, 代码块高亮支持
 
 const renderers = {
     renderHeading,

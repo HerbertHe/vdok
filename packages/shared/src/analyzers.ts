@@ -1,4 +1,4 @@
-import YAML from "yaml"
+const YAML = require("yaml")
 
 /**
  * 分割yaml拓展语法特性

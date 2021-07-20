@@ -35,7 +35,7 @@ import { VdokConfigTemplate, VdokRoutesTemplate } from "./templates"
 /**
  * 本地生成 .vdok 临时文件夹
  */
-function generateDotVdok() {
+export function generateDotVdok() {
     if (!fs.existsSync(dotVdokDirPath)) {
         // 生成文件夹
         fs.mkdirSync(dotVdokDirPath, { recursive: true })
@@ -333,30 +333,4 @@ export function createSymlinkForInnerNodeModules() {
 
     fs.symlinkSync(rootNodeModulesPath, vdokNodeModulesPath, "dir")
     console.log(exportPass("Create symlink for .vdok/node_modules"))
-}
-
-/**
- * 初始化构建操作
- */
-export async function initialBuild() {
-    // 生成 .vdok 文件夹
-    generateDotVdok()
-    // 移动vdok-client
-    copyVdokClient()
-    // 根目录下载依赖
-    if (
-        process.env.VDOK_DEBUG === "DEBUG" &&
-        process.env.VDOK_DEBUG_FAST === "FAST"
-    ) {
-        console.log(debugInfo("Fast rebuild for debug"))
-    } else {
-        await installPackage()
-    }
-    // 创建软连接
-    createSymlinkForInnerNodeModules()
-    // 移动路由文件
-    await writeRoutesInfos()
-    // 移动配置文件
-    await writeVdokConfig()
-    createSymlinkForDocs()
 }

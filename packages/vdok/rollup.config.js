@@ -23,7 +23,7 @@ export default {
         nodeResolve({ extensions, preferBuiltins: true }),
 
         // Allow bundling cjs modules. Rollup doesn't understand cjs
-        commonjs(),
+        commonjs({ ignoreDynamicRequires: true }),
 
         // Compile TypeScript/JavaScript files
         babel({ extensions, babelHelpers: "runtime", include: ["node/**/*"] }),
