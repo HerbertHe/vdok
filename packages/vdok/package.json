@@ -1,6 +1,6 @@
 {
   "name": "@herberthe/vdok-cli",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Cli tool for Vdok",
   "author": "Herbert <herbert.he0229@gmail.com>",
   "homepage": "https://github.com/HerbertHe/vdok#readme",
@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@herberthe/vdok-shared": "^0.0.11",
-    "@herberthe/vdok-types": "^0.0.11",
+    "@herberthe/vdok-types": "^0.0.12",
     "chalk": "^4.1.1",
     "chokidar": "^3.5.2",
     "commander": "^8.0.0",
