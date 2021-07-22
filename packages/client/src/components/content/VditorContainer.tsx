@@ -23,7 +23,6 @@ const VditorContainer: FC<IVditorContainerProps> = ({ markdown }) => {
                 !!markdown ? markdown : "",
                 {
                     renderers,
-                    anchor: 1,
                     mode: "light",
                 }
             ).then(() => {

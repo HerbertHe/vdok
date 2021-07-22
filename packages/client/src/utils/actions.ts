@@ -23,6 +23,15 @@ export function SwitchTheme() {
 //     }
 // }
 
+export function AutoInitialLang() {
+    const lang = (<any>window).__Vdok_i18n__
+    if (!!lang) {
+        // 插入语言标签
+        const html = document.querySelector("html") as HTMLHtmlElement
+        html.setAttribute("lang", lang)
+    }
+}
+
 /**
  * 判断是否为夜间模式
  */
