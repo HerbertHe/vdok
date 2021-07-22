@@ -1,5 +1,5 @@
 import React, { FC, useEffect } from "react"
-import _ from "lodash"
+// import _ from "lodash"
 import { ToAnchor } from "../../utils/actions"
 
 export interface IContentOutlineItem {
@@ -18,20 +18,18 @@ const ContentOutline: FC<IContentOutlineProps> = ({ outlines }) => {
         window.addEventListener("hashchange", (e) => {
             updateAnchorTheme()
         })
-        window.addEventListener(
-            "scroll",
-            _.throttle(() => {
-                for (let item of outlines) {
-                    const top = document
-                        .getElementById(item.anchor as string)
-                        ?.getBoundingClientRect().top as number
-                    // BUG 锚点太近的页面抖动问题
-                    if (top > 0 && top < 80) {
-                        location.hash = item.anchor as string
-                    }
+        window.addEventListener("scroll", () => {
+            // TODO 修复此处BUG
+            for (let item of outlines) {
+                const top = document
+                    .getElementById(item.anchor as string)
+                    ?.getBoundingClientRect().top as number
+                // BUG 锚点太近的页面抖动问题
+                if (top > 0 && top < 80) {
+                    location.hash = item.anchor as string
                 }
-            }, 200)
-        )
+            }
+        })
         return () => {
             window.removeEventListener("hashchange", () => {})
             window.removeEventListener("scroll", () => {})

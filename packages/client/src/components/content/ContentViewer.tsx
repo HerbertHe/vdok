@@ -1,10 +1,7 @@
 import React, { FC, useEffect } from "react"
 import { useRequest } from "ahooks"
 import { withRouter, useLocation } from "react-router-dom"
-import {
-    DivideFeatures,
-    ConvertHeadingMagic,
-} from "@herberthe/vdok-shared/dist/esm"
+import { DivideFeatures, ConvertHeadingMagic } from "../../utils/shared"
 
 import SideOutlineNavs from "./SideOutlineNavs"
 import VditorContainer from "./VditorContainer"
@@ -17,44 +14,7 @@ import { GenerateContentOutline } from "../../utils/outline"
 import PrevNext from "../extra/PrevNext"
 
 import { ImportMeta } from "../../utils/import-meta"
-import VdokConfig from "../../../vdok.config"
-
-// TODO 这个路径处理的部分可以踢出去
-function getMarkdownContent(path: string): Promise<string> {
-    const isDev: boolean = !!VdokConfig.dev ? true : false
-    let target: string = ""
-    let local: string = "/docs"
-    // 获取文档路径
-    const rootRegExp = new RegExp(`http(s)?:\/\/${VdokConfig.root}`)
-    const doc = path.replace(rootRegExp, "")
-
-    if (!isDev) {
-        const GitHubRegExp = /^http(s)?:\/\/github.com\//
-        if (GitHubRegExp.test(VdokConfig.base || "")) {
-            const [user, repo] =
-                VdokConfig.base || "".replace(GitHubRegExp, "").split("/")
-            // 更新与静态 `/docs` 下
-            target = `//cdn.jsdelivr.net/gh/${user}/${repo}@${VdokConfig.branch}/docs${doc}.md`
-        } else {
-            // TODO 不是来自于GitHub
-        }
-    } else {
-        local += `${doc}.md`
-    }
-
-    return new Promise((resolve, reject) => {
-        // 处理是否是开发模式
-        fetch(isDev ? local : target)
-            .then(async (res: Response) => {
-                const data = await res.text()
-                if (res.status === 404) {
-                    reject({ status: res.status, statusText: res.statusText })
-                }
-                resolve(data)
-            })
-            .catch((err: Error) => reject(err))
-    })
-}
+import { getDocumentMarkdownContent } from "../../utils/content"
 
 /**
  * TODO: 路由需要处理移除带有 _index 的路径, 暂时不处理, 意义不大
@@ -62,9 +22,12 @@ function getMarkdownContent(path: string): Promise<string> {
 const ContentViewer: FC = () => {
     const { pathname } = useLocation()
 
-    const { data, error, loading, run } = useRequest(getMarkdownContent, {
-        manual: true,
-    })
+    const { data, error, loading, run } = useRequest(
+        getDocumentMarkdownContent,
+        {
+            manual: true,
+        }
+    )
 
     // 改为钩子触发
     useEffect(() => {

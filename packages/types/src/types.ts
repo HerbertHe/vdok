@@ -25,5 +25,6 @@ export interface ISideNavs {
 
 export interface IRouteItem {
     lang: string
+    index: string
     sections: Array<ISideNavSection>
 }

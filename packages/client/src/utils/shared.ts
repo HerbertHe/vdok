@@ -3,4 +3,5 @@ export {
     ConvertAnchorMagic,
     renderers,
     ConvertHeadingMagic,
+    DivideFeatures,
 } from "@herberthe/vdok-shared/dist/esm"

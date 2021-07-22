@@ -54,7 +54,7 @@ function detectInI18nMode(): Array<string> {
             _dirs.push(tmp)
         }
 
-        // 忽略掉所有根目录文件
+        // 忽略掉所有源根目录文件
 
         // 不是i18n文件夹忽略掉
     })

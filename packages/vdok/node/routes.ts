@@ -67,6 +67,7 @@ export function generateRoutes(): Array<IRouteItem> {
         tree.forEach((tr) => {
             let langSectionTmp: IRouteItem = {
                 lang: tr.lang,
+                index: "",
                 sections: [],
             }
 
@@ -75,6 +76,11 @@ export function generateRoutes(): Array<IRouteItem> {
                     const sections = generateSideNavSection(tr.lang, section)
                     if (!!sections) {
                         langSectionTmp.sections.push(sections)
+                    }
+                } else {
+                    // 目前只处理 _index.md 文件
+                    if (section.index.exist) {
+                        langSectionTmp.index = `/${tr.lang}/_index`
                     }
                 }
                 // 根目录暂不处理
@@ -93,11 +99,18 @@ export function generateRoutes(): Array<IRouteItem> {
     } else {
         // 非 i18n 路由生成
         let _sections: Array<ISideNavSection> = []
+        let _index: string = ""
+
         tree[0].sections.forEach((section) => {
             if (section.name !== "_root") {
                 const sections = generateSideNavSection("", section)
                 if (!!sections) {
                     _sections.push(sections)
+                }
+            } else {
+                // 目前根目录只处理 _index.md 文件
+                if (section.index.exist) {
+                    _index = "_index"
                 }
             }
             // 根目录暂时不处理
@@ -106,6 +119,7 @@ export function generateRoutes(): Array<IRouteItem> {
         const _back = [
             {
                 lang: "",
+                index: _index,
                 sections: _sections,
             },
         ]

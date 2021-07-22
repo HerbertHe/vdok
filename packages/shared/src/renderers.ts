@@ -51,7 +51,7 @@ function renderCodeBlock(node: any, entering: boolean): [string, number] {
         const content = node.Content()
         if (vdokSpecialExtendLanguage.includes(language)) {
             console.log("当前激活了vdok的组件渲染模式")
-            // 在此拓展组件
+            // TODO 在此拓展组件
             return [
                 `<iframe srcdoc="${content}"></iframe>`,
                 Lute.WalkSkipChildren,

@@ -20,7 +20,6 @@ export function ConvertAnchor(text: string) {
  * 全文转化 hack 实现
  */
 export function ConvertHeadingMagic(markdown: string): string {
-    console.log(markdown.replace(/\{\#/g, "$"))
     return markdown.replace(/\{\#/g, "$")
 }
 
