@@ -1,7 +1,10 @@
 import React, { FC, useEffect } from "react"
 import { useRequest } from "ahooks"
 import { withRouter, useLocation } from "react-router-dom"
-import { DivideFeatures } from "@herberthe/vdok-shared"
+import {
+    DivideFeatures,
+    ConvertHeadingMagic,
+} from "@herberthe/vdok-shared/dist/esm"
 
 import SideOutlineNavs from "./SideOutlineNavs"
 import VditorContainer from "./VditorContainer"
@@ -95,7 +98,9 @@ const ContentViewer: FC = () => {
                 {/* {loading && <Loading />} */}
                 {!!error && <GetContentError error={error} />}
                 {!!data && (
-                    <VditorContainer markdown={DivideFeatures(data)[1]} />
+                    <VditorContainer
+                        markdown={ConvertHeadingMagic(DivideFeatures(data)[1])}
+                    />
                 )}
                 {/* <PrevNext /> */}
                 <Footer />
@@ -111,7 +116,9 @@ const ContentViewer: FC = () => {
                     outlines={
                         !!data
                             ? GenerateContentOutline(
-                                  DivideFeatures(data)[1] as string
+                                  ConvertHeadingMagic(
+                                      DivideFeatures(data)[1] as string
+                                  )
                               )
                             : []
                     }

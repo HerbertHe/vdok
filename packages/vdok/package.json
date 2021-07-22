@@ -33,7 +33,6 @@
     "url": "https://github.com/HerbertHe/vdok/issues"
   },
   "dependencies": {
-    "@herberthe/vdok-shared": "^0.0.11",
     "@herberthe/vdok-types": "^0.0.13",
     "chalk": "^4.1.1",
     "chokidar": "^3.5.2",
@@ -67,5 +66,5 @@
     "rollup": "^2.52.7",
     "typescript": "^4.3.4"
   },
-  "gitHead": "2fca5dde24209f06e6ee71a53c4e87e32162f448"
+  "gitHead": "969eeff6b1bf8a23144647850c43f929506f812d"
 }

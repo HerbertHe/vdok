@@ -1,8 +1,9 @@
 import React, { createRef, FC, useEffect } from "react"
 import Vditor from "vditor"
-import { renderers } from "@herberthe/vdok-shared"
+import { renderers, ConvertHeadingMagic } from "../../utils/shared"
 
 import "../../styles/vdok-vditor-container.less"
+
 import NoContentFound from "../errors/NoContentFound"
 
 export interface IVditorContainerProps {

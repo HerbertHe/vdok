@@ -1,7 +1,7 @@
 import { lexer } from "marked"
+import { ConvertAnchor, ConvertAnchorMagic } from "../utils/shared"
 
 import type { IContentOutlineItem } from "../components/content/ContentOutline"
-import { ConvertAnchor } from "./converters"
 
 interface IMarkedHeading {
     depth: number
@@ -11,24 +11,19 @@ interface IMarkedHeading {
 export function GenerateContentOutline(
     content: string
 ): Array<IContentOutlineItem> {
-    // TODO 修复不支持自定义锚点
-    const AnchorRegExp = /\{#([\S ]*)\}/
+    // TODO 修复不支持自定义锚点, 使用 hack 方法实现
+    const [] = ConvertAnchorMagic(content)
     const filter = lexer(content).filter(
         (v) => v.type === "heading"
     ) as Array<IMarkedHeading>
 
     const res = filter.map((item: IMarkedHeading) => {
-        // const anchorArray = AnchorRegExp.exec(item.text)
-
-        const heading = item.text.replace(AnchorRegExp, "").trim()
+        const [anchor, heading] = ConvertAnchorMagic(item.text)
 
         return {
             heading,
             level: item.depth,
-            // anchor: !!anchorArray
-            //     ? ConvertAnchor(anchorArray[1].trim())
-            //     : ConvertAnchor(heading),
-            anchor: ConvertAnchor(heading),
+            anchor: ConvertAnchor(anchor),
         }
     }) as Array<IContentOutlineItem>
 
