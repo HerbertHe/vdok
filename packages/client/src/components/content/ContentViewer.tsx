@@ -16,6 +16,8 @@ import PrevNext from "../extra/PrevNext"
 import { ImportMeta } from "../../utils/import-meta"
 import { getDocumentMarkdownContent } from "../../utils/content"
 
+import "../../styles/content/content-viewer.less"
+
 /**
  * TODO: 路由需要处理移除带有 _index 的路径, 暂时不处理, 意义不大
  */
@@ -51,13 +53,13 @@ const ContentViewer: FC = () => {
 
     return (
         <div className="w-full">
-            <div className="w-260px h-screen fixed left-0 top-0 bg-white z-100 <lg:(hidden)">
+            <div className="vdok-layout-side-outline-navs">
                 <SideOutlineNavs />
             </div>
-            <div className="w-full ml-260px h-60px fixed top-0 bg-white z-99 shadow dark:(bg-dark-700 text-white) <lg:(ml-0)">
+            <div className="vdok-layout-content-header">
                 <ContentHeader />
             </div>
-            <div className="w-auto ml-260px mr-150px px-45px mt-70px <lg:(ml-0) <md:(mr-0)">
+            <div className="vdok-layout-content-container">
                 {/* {loading && <Loading />} */}
                 {!!error && <GetContentError error={error} />}
                 {!!data && (
@@ -68,12 +70,7 @@ const ContentViewer: FC = () => {
                 {/* <PrevNext /> */}
                 <Footer />
             </div>
-            <div
-                className="w-150px fixed right-0 top-60px p-3 shadow bg-white dark:(bg-dark-800 text-white) <md:(hidden)"
-                style={{
-                    height: "calc(100vh - 60px)",
-                }}
-            >
+            <div className="vdok-layout-content-outline">
                 <div className="text-gray-400 font-bold mb-3">Outline</div>
                 <ContentOutline
                     outlines={

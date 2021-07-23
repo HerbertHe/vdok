@@ -11,6 +11,19 @@ export function SwitchTheme() {
 }
 
 /**
+ * 切换 RTL
+ */
+export function SwitchRTL() {
+    const html = document.getElementsByTagName("html")[0]
+    const dir = html.getAttribute("dir")
+    if (dir === "ltr") {
+        html.setAttribute("dir", "rtl")
+    } else {
+        html.setAttribute("dir", "ltr")
+    }
+}
+
+/**
  * Auto dark mode
  * TODO: fix bugs
  */
@@ -24,11 +37,13 @@ export function SwitchTheme() {
 // }
 
 export function AutoInitialLang() {
+    // TODO 考虑在此自动切换 RTL
     const lang = (<any>window).__Vdok_i18n__
     if (!!lang) {
         // 插入语言标签
         const html = document.querySelector("html") as HTMLHtmlElement
         html.setAttribute("lang", lang)
+        html.setAttribute("dir", "ltr")
     }
 }
 

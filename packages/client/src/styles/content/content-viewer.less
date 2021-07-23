@@ -1,0 +1,24 @@
+.vdok-layout-side-outline-navs {
+    @apply w-260px h-screen fixed top-0 bg-white z-100;
+    @apply ltr:left-0 <lg:ltr:(hidden);
+    @apply rtl:right-0 <lg:rtl:(hidden);
+}
+
+.vdok-layout-content-header {
+    @apply w-full h-60px fixed top-0 bg-white z-99 shadow dark:(bg-dark-700 text-white);
+    @apply ltr:ml-260px <lg:ltr:(m-0);
+    @apply rtl:mr-260px <lg:rtl:(m-0);
+}
+
+.vdok-layout-content-container {
+    @apply w-auto px-45px mt-70px;
+    @apply ltr:(ml-260px mr-150px) <lg:ltr:(ml-0) <md:ltr:(mr-0 px-4);
+    @apply rtl:(mr-260px ml-150px) <lg:rtl:(mr-0) <md:rtl:(ml-0 px-4);
+}
+
+.vdok-layout-content-outline {
+    height: calc(100vh - 60px);
+    @apply w-150px fixed top-60px p-3 shadow bg-white dark:(bg-dark-800 text-white);
+    @apply ltr:right-0 <md:ltr:(hidden);
+    @apply rtl:left-0 <md:rtl:(hidden);
+}
