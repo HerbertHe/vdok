@@ -63,7 +63,6 @@ function renderCodeBlock(node: any, entering: boolean): [string, number] {
     }
 }
 
-// TODO 自定义渲染代码块, 代码块高亮支持
 export const renderers = {
     renderHeading,
     renderCodeBlock,

@@ -143,7 +143,7 @@ function handleSection(
     })
 
     if (_section.section === "_root") {
-        // TODO 根目录/语言根目录 存在 _index.md 文件
+        // 根目录/语言根目录 存在 _index.md 文件
         if (_notIndex.length !== _section.files.length) {
             const [feats, markdown] = analyzerArticle(
                 fs.readFileSync(_isIndex, { encoding: "utf-8" })
@@ -252,7 +252,8 @@ export function handleEffectiveFiles(): [
                 sections: [],
             }
 
-            // TODO 根目录配置已经不再支持, 改为 zh-CN/_index.md 侦测
+            //  zh-CN/_index.md 侦测
+
             _tmp.lang = _f.lang
             // 遍历处理子 sections
             for (let _section of _f.sections) {
