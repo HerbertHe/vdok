@@ -53,7 +53,7 @@ export function handleFiles(files: Array<string>): Array<BackFileItemType> {
     let _noOrdered: Array<BackFileItemType> = []
 
     _raw.forEach((f) => {
-        if (f[1].order !== 0) {
+        if (f[1].order === -1) {
             _noOrdered.push(f)
         } else {
             _ordered.push(f)
@@ -65,8 +65,9 @@ export function handleFiles(files: Array<string>): Array<BackFileItemType> {
         return _raw
     } else {
         const _sorted = _ordered.sort(
-            ([, f1], [, f2]) => (f1.order as number) - (f2.order as number)
+            ([, f1], [, f2]) => (f2.order as number) - (f1.order as number)
         )
+
         return _sorted.concat(_noOrdered)
     }
 }
@@ -99,7 +100,7 @@ function sortSections(
     } else {
         const _sorted = _ordered.sort(
             ({ index: idx1 }, { index: idx2 }) =>
-                (idx1.feats?.order as number) - (idx2.feats?.order as number)
+                (idx2.feats?.order as number) - (idx1.feats?.order as number)
         )
 
         return [_nonSection, ..._sorted, ..._noOrdered]

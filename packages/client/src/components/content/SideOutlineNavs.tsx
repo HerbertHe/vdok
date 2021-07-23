@@ -24,6 +24,7 @@ const SideOutlineNavs = () => (
                             key={j.url}
                             url={j.url || ""}
                             title={j.title}
+                            draft={j.draft}
                         />
                     ))}
                 </Fragment>

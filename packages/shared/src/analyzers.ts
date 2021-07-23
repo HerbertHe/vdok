@@ -38,14 +38,14 @@ export function analyzeArticleFeatures(yml: string): IArticleFeatures {
         const ans = YAML.parse(yml) as IArticleFeatures
         let _re: IArticleFeatures = {}
         _re.title = ans.title || ""
-        _re.order = ans.order || 0
+        _re.order = ans.order || -1
         _re.draft = ans.draft || false
         return _re
     }
 
     return {
         title: "",
-        order: 0,
+        order: -1,
         draft: false,
     } as IArticleFeatures
 }

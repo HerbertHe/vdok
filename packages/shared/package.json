@@ -12,7 +12,7 @@
     "package.json"
   ],
   "publishConfig": {
-    "registry": "https://registry.npm.org/",
+    "registry": "https://registry.npmjs.org/",
     "access": "public"
   },
   "repository": {

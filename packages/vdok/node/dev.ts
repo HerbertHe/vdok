@@ -39,7 +39,7 @@ async function devTask() {
 }
 
 export async function runDev() {
-    process.env.NODE_ENV = JSON.stringify("development")
+    process.env.NODE_ENV = "development"
 
     console.log(exportLabel("Vdok Development Start~"))
 

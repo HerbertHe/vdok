@@ -18,6 +18,7 @@ function generateSideNavSection(
         section: "",
         title: "",
         index: "",
+        draft: false,
         navs: [],
     }
 
@@ -45,6 +46,8 @@ function generateSideNavSection(
 
     const shouldIndex = section.index.exist && !section.index.feats?.draft
     const isDev = process.env.NODE_ENV === "development"
+
+    sideNavSectionTmp.draft = !!section.index.feats?.draft
 
     sideNavSectionTmp.index = isDev
         ? section.index.exist
