@@ -43,18 +43,41 @@ function generateSideNavSection(
         return null
     }
 
-    sideNavSectionTmp.index = section.index.exist
+    const shouldIndex = section.index.exist && !section.index.feats?.draft
+    const isDev = process.env.NODE_ENV === "development"
+
+    sideNavSectionTmp.index = isDev
+        ? section.index.exist
+            ? `${!!lang ? `/${lang}` : ""}/${section.name}/_index`
+            : `${!!lang ? `/${lang}` : ""}/${section.name}/${
+                  section.files[0][0]
+              }`
+        : shouldIndex
         ? `${!!lang ? `/${lang}` : ""}/${section.name}/_index`
         : `${!!lang ? `/${lang}` : ""}/${section.name}/${section.files[0][0]}`
+
     sideNavSectionTmp.title = section.title
     sideNavSectionTmp.section = section.name
-    sideNavSectionTmp.navs = section.files.map(
-        ([name, features]) =>
-            ({
+
+    let _navs: Array<ISideNavItem> = []
+
+    section.files.forEach(([name, features]) => {
+        if (isDev) {
+            _navs.push({
                 title: `${!!features.title ? features.title : name}`,
+                draft: !!features.draft,
                 url: `${!!lang ? `/${lang}` : ""}/${section.name}/${name}`,
             } as ISideNavItem)
-    )
+        } else if (!features.draft) {
+            _navs.push({
+                title: `${!!features.title ? features.title : name}`,
+                draft: false,
+                url: `${!!lang ? `/${lang}` : ""}/${section.name}/${name}`,
+            })
+        }
+    })
+
+    sideNavSectionTmp.navs = _navs
 
     return sideNavSectionTmp
 }
@@ -78,12 +101,19 @@ export function generateRoutes(): Array<IRouteItem> {
                         langSectionTmp.sections.push(sections)
                     }
                 } else {
-                    // 目前只处理 _index.md 文件
-                    if (section.index.exist) {
-                        langSectionTmp.index = `/${tr.lang}/_index`
-                    }
+                    // 目前只处理根目录下的 _index.md 文件
+                    const shouldIndex =
+                        section.index.exist && !section.index.feats?.draft
+                    const isDev = process.env.NODE_ENV === "development"
+
+                    langSectionTmp.index = isDev
+                        ? section.index.exist
+                            ? `/${tr.lang}/_index`
+                            : ""
+                        : shouldIndex
+                        ? `/${tr.lang}/_index`
+                        : ""
                 }
-                // 根目录暂不处理
             })
 
             _back.push(langSectionTmp)
@@ -109,11 +139,18 @@ export function generateRoutes(): Array<IRouteItem> {
                 }
             } else {
                 // 目前根目录只处理 _index.md 文件
-                if (section.index.exist) {
-                    _index = "_index"
-                }
+                const shouldIndex =
+                    section.index.exist && !section.index.feats?.draft
+                const isDev = process.env.NODE_ENV === "development"
+
+                _index = isDev
+                    ? section.index.exist
+                        ? `/_index`
+                        : ""
+                    : shouldIndex
+                    ? `/_index`
+                    : ""
             }
-            // 根目录暂时不处理
         })
 
         const _back = [

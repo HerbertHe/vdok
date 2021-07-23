@@ -20,10 +20,13 @@ export function DivideFeatures(markdown: string): Array<string> {
  * 文章的 yaml features
  * @param title 自定义标题文件
  * @param order 文档排序
+ * @param draft 草稿
  */
+// TODO draft (仅开发模式会显示, 生产模式会忽略路由生成相关)
 export interface IArticleFeatures {
     title?: string
     order?: number
+    draft?: boolean
 }
 
 /**
@@ -34,13 +37,16 @@ export function analyzeArticleFeatures(yml: string): IArticleFeatures {
     if (!!yml) {
         const ans = YAML.parse(yml) as IArticleFeatures
         let _re: IArticleFeatures = {}
-        _re.title = !!ans.title ? ans.title : ""
-        _re.order = !!ans.order ? ans.order : 0
+        _re.title = ans.title || ""
+        _re.order = ans.order || 0
+        _re.draft = ans.draft || false
         return _re
     }
+
     return {
         title: "",
         order: 0,
+        draft: false,
     } as IArticleFeatures
 }
 

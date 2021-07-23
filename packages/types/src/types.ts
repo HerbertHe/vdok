@@ -1,5 +1,6 @@
 export interface ISideNavItem {
     title: string
+    draft?: boolean
     url?: string
 }
 
