@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "normalize-diacritics": "^2.14.0",
+    "react-dom": "^17.0.2",
     "yaml": "^1.10.2"
   },
   "gitHead": "969eeff6b1bf8a23144647850c43f929506f812d"

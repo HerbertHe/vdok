@@ -1,5 +1,8 @@
+import { renderToString } from "react-dom/server"
 import type { ILuteNode } from "./vditor-types"
 import { ConvertAnchor, ConvertAnchorMagic } from "./converters"
+
+const VdokBlockquoteRegExp = /^::([^\n ]+):: /
 
 interface INode extends ILuteNode {
     Text: () => string
@@ -51,9 +54,12 @@ function renderCodeBlock(node: any, entering: boolean): [string, number] {
         const content = node.Content()
         if (vdokSpecialExtendLanguage.includes(language)) {
             console.log("当前激活了vdok的组件渲染模式")
+            console.log(language)
+            console.log(content)
+            console.log(renderToString(content))
             // TODO 在此拓展组件
             return [
-                `<iframe srcdoc="${content}"></iframe>`,
+                `<iframe srcdoc="${renderToString(content)}"></iframe>`,
                 Lute.WalkSkipChildren,
             ]
         }
@@ -63,7 +69,34 @@ function renderCodeBlock(node: any, entering: boolean): [string, number] {
     }
 }
 
+function renderBlockquote(node: any, entering: boolean): [string, number] {
+    if (entering) {
+        const content = node.Text() as string
+        const reg = VdokBlockquoteRegExp.exec(content)
+
+        return [
+            `<blockquote ${!!reg ? `class=${reg[1]}` : ""}>`,
+            Lute.WalkContinue,
+        ]
+    } else {
+        return ["</blockquote>", Lute.WalkContinue]
+    }
+}
+
+function renderText(node: any, entering: boolean): [string, number] {
+    if (entering) {
+        return [
+            `${(<string>node.Text()).replace(VdokBlockquoteRegExp, "")}`,
+            Lute.WalkContinue,
+        ]
+    } else {
+        return ["", Lute.WalkContinue]
+    }
+}
+
 export const renderers = {
     renderHeading,
     renderCodeBlock,
+    renderBlockquote,
+    renderText,
 }

@@ -44,12 +44,37 @@
         overflow: hidden;
     }
 
-    span[class*="base"] {
+    span[class~="base"] {
         @apply my-1;
     }
 
     pre > code {
         @apply !p-2;
+    }
+
+    blockquote {
+        border-left-color: var(--theme-color) !important;
+        @apply py-2 px-3 bg-gray-100 rounded;
+    }
+
+    blockquote[class~="pass"] {
+        border-left-color: green !important;
+        @apply bg-green-100;
+    }
+
+    blockquote[class~="info"] {
+        border-left-color: blue !important;
+        @apply bg-blue-100;
+    }
+
+    blockquote[class~="warn"] {
+        border-left-color: orange !important;
+        @apply bg-yellow-100;
+    }
+
+    blockquote[class~="error"] {
+        border-left-color: red !important;
+        @apply bg-red-100;
     }
 
     details {
@@ -94,6 +119,10 @@ html[class="dark"] .vdok-vditor-container {
         th {
             @apply border border-dark-100;
         }
+    }
+
+    blockquote {
+        @apply bg-dark-500 text-light-900;
     }
 
     // TODO 修复夜间模式问题
