@@ -1,7 +1,6 @@
 import React, { FC, useEffect } from "react"
 import { useRequest } from "ahooks"
 import { withRouter, useLocation } from "react-router-dom"
-import { DivideFeatures, ConvertHeadingMagic } from "../../utils/shared"
 
 import SideOutlineNavs from "./SideOutlineNavs"
 import VditorContainer from "./VditorContainer"
@@ -10,11 +9,12 @@ import Loading from "../errors/Loading"
 import GetContentError from "../errors/GetContentError"
 import ContentOutline from "./ContentOutline"
 import ContentHeader from "./ContentHeader"
-import { GenerateContentOutline } from "../../utils/outline"
 import PrevNext from "../extra/PrevNext"
 
 import { ImportMeta } from "../../utils/import-meta"
 import { getDocumentMarkdownContent } from "../../utils/content"
+import { DivideFeatures, ConvertHeadingMagic } from "../../utils/shared"
+import { GenerateContentOutline } from "../../utils/outline"
 
 import "../../styles/content/content-viewer.less"
 
@@ -71,7 +71,6 @@ const ContentViewer: FC = () => {
                 <Footer />
             </div>
             <div className="vdok-layout-content-outline">
-                <div className="text-gray-400 font-bold mb-3">Outline</div>
                 <ContentOutline
                     outlines={
                         !!data

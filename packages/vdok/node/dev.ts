@@ -2,7 +2,16 @@ import fs from "fs"
 
 import { startViteServer } from "./vite"
 import { debugInfo, deleteAllFiles, exportLabel, exportPass } from "./utils"
-import { copyVdokClient, createSymlinkForDocs, createSymlinkForInnerNodeModules, generateDotVdok, installPackage, writeRoutesInfos, writeVdokConfig } from "./actions"
+import {
+    copyVdokClient,
+    createSymlinkForDocs,
+    createSymlinkForInnerNodeModules,
+    createSymlinkForLocales,
+    generateDotVdok,
+    installPackage,
+    writeRoutesInfos,
+    writeVdokConfig,
+} from "./actions"
 import {
     dotVdokDirPath,
     rawDocsPath,
@@ -35,7 +44,10 @@ async function devTask() {
     await writeRoutesInfos()
     // 移动配置文件
     await writeVdokConfig()
+    // 文档创建软连接
     createSymlinkForDocs()
+    // 国际化翻译创建软连接
+    createSymlinkForLocales()
 }
 
 export async function runDev() {

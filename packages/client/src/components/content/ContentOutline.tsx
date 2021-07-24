@@ -1,5 +1,7 @@
-import React, { FC, useEffect } from "react"
+import React, { FC, Fragment, useEffect } from "react"
 // import _ from "lodash"
+import { useTranslation } from "react-i18next"
+
 import { ToAnchor } from "../../utils/actions"
 
 export interface IContentOutlineItem {
@@ -13,6 +15,8 @@ export interface IContentOutlineProps {
 }
 
 const ContentOutline: FC<IContentOutlineProps> = ({ outlines }) => {
+    const { t } = useTranslation("translation", { useSuspense: false })
+
     useEffect(() => {
         updateAnchorTheme()
         window.addEventListener("hashchange", (e) => {
@@ -63,22 +67,25 @@ const ContentOutline: FC<IContentOutlineProps> = ({ outlines }) => {
     }
 
     return (
-        <ul className="w-full text-xs h-full overflow-auto pb-5 scrollbar-thin vdok-scrollbar">
-            {outlines.map((item: IContentOutlineItem) => (
-                <li key={item.heading} className="my-1">
-                    <a
-                        href={`#${item.anchor}`}
-                        data-anchor={`#${item.anchor}`}
-                        title={item.heading}
-                        className="vdok-content-outline"
-                        onClick={(e) => scrollAnchor(e, `#${item.anchor}`)}
-                    >
-                        {item.heading}
-                    </a>
-                </li>
-            ))}
-            {outlines.length === 0 && <li>No Content ~</li>}
-        </ul>
+        <Fragment>
+            <div className="text-gray-400 font-bold mb-3">{t("Outline")}</div>
+            <ul className="w-full text-xs h-full overflow-auto pb-5 scrollbar-thin vdok-scrollbar">
+                {outlines.map((item: IContentOutlineItem) => (
+                    <li key={item.heading} className="my-1">
+                        <a
+                            href={`#${item.anchor}`}
+                            data-anchor={`#${item.anchor}`}
+                            title={item.heading}
+                            className="vdok-content-outline"
+                            onClick={(e) => scrollAnchor(e, `#${item.anchor}`)}
+                        >
+                            {item.heading}
+                        </a>
+                    </li>
+                ))}
+                {outlines.length === 0 && <li>{t("No Content")}</li>}
+            </ul>
+        </Fragment>
     )
 }
 

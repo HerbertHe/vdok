@@ -17,6 +17,7 @@ import {
 import {
     dotVdokDirPath,
     rawDocsPath,
+    rawLocalesPath,
     rawPackageJsonPath,
     rawVdokConfigYamlPath,
     rawVdokConfigYmlPath,
@@ -24,6 +25,7 @@ import {
     vdokClientFromNodeModulesPath,
     vdokConfigPath,
     vdokDocsPath,
+    vdokLocalesPath,
     vdokNodeModulesPath,
     vdokPackageJsonPath,
     vdokPublicPath,
@@ -108,8 +110,9 @@ export async function writeRoutesInfos() {
 
 export function createSymlinkForDocs() {
     if (process.env.VDOK_DEBUG === "DEBUG") {
-        console.log(debugInfo("Create Symlink for .vdok/docs"))
+        console.log(debugInfo("Create Symlink for .vdok/public/docs"))
     }
+
     if (!fs.existsSync(rawDocsPath)) {
         throw new Error("No docs folder in root path!")
     }
@@ -126,23 +129,26 @@ export function createSymlinkForDocs() {
     console.log(exportPass("Create symlink for docs"))
 }
 
-/**
- * 移动文本文件
- * @param src
- * @param dest
- * @returns
- */
-// export function copyMarkdownFile(src: string, dest: string) {
-//     const before = fs.readFileSync(src, { encoding: "utf-8" })
-//     const after = fs.readFileSync(src, { encoding: "utf-8" })
+export function createSymlinkForLocales() {
+    if (process.env.VDOK_DEBUG === "DEBUG") {
+        console.log(debugInfo("Create Symlink for .vdok/public/locales"))
+    }
 
-//     if (md5(before) === md5(after)) {
-//         return
-//     }
+    if (!fs.existsSync(rawLocalesPath)) {
+        throw new Error("No locales folder in root path!")
+    }
 
-//     fs.copyFileSync(src, dest)
-//     console.log(exportPass(""))
-// }
+    if (fs.existsSync(vdokLocalesPath)) {
+        deleteAllFiles(vdokLocalesPath)
+    }
+
+    if (!fs.existsSync(vdokPublicPath)) {
+        fs.mkdirSync(vdokPublicPath, { recursive: true })
+    }
+
+    fs.symlinkSync(rawLocalesPath, vdokLocalesPath, "dir")
+    console.log(exportPass("Create symlink for locales"))
+}
 
 /**
  * 移动 vdok client文件
